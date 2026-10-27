@@ -299,7 +299,7 @@ if [[ $install_units -eq 1 ]]; then
 fi
 
 echo "==> backing up the db before restart"
-ssh "$HOST" "cd $REMOTE_DIR && ~/.local/bin/anser-server backup"
+ssh "$HOST" "cd $REMOTE_DIR && FINANCE_HOME=\$PWD ~/.local/bin/anser-server backup"
 
 echo "==> restarting anser-server"
 ssh "$HOST" "systemctl --user restart anser-server"

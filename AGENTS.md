@@ -34,6 +34,6 @@ screenshots). Start here:
   `knowledge/*`) never goes into git, nor anything derived from it (goldens,
   fixtures, screenshots, docs with real amounts or names).
 - The laptop `data/finance.db` is a dev copy and may lag prod. For analysis,
-  pull a snapshot: run `~/.local/bin/anser-server backup` on the server, then scp it. Open it read-only.
+  pull a snapshot: run `cd ~/finance && FINANCE_HOME=$PWD ~/.local/bin/anser-server backup` on the server, then scp it. Open it read-only.
 - API keys are read-only. Nothing in this app may place trades or move money.
 - Pages must never 500: fall back to cached data with a stale badge.
