@@ -28,8 +28,8 @@ pub fn run(args: &[String]) -> anyhow::Result<()> {
         return one(keep);
     }
     let mut result = one(keep);
-    let others: Vec<_> = if finance_server::auth::path().exists() {
-        finance_server::syncer::tenants().into_iter().filter(|t| !t.legacy).collect()
+    let others: Vec<_> = if crate::auth::path().exists() {
+        crate::syncer::tenants().into_iter().filter(|t| !t.legacy).collect()
     } else {
         vec![]
     };
@@ -49,9 +49,9 @@ fn one(keep: i64) -> anyhow::Result<()> {
     let size = std::fs::metadata(&dest)?.len() as f64;
     println!("Backed up to {} ({:.1} MB); keeping newest {keep}.", dest.display(), size / 1e6);
     // the encrypted off-device archive, when a backup key is configured
-    match finance_server::backups::nightly() {
+    match crate::backups::nightly() {
         Ok(Some((path, size))) => println!("Archive {} ({:.1} MB, sealed to the backup key); keeping newest {}.",
-            path.display(), size as f64 / 1e6, finance_server::backups::keep()),
+            path.display(), size as f64 / 1e6, crate::backups::keep()),
         Ok(None) => {}
         // the plain backup above stands; the timer's log shows this
         Err(e) => eprintln!("archive failed: {e:#}"),

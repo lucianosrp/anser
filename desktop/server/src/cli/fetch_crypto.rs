@@ -5,7 +5,7 @@
 use anyhow::{bail, Result};
 
 use finance_engine::fetch;
-use finance_server::syncer;
+use crate::syncer;
 
 use super::args::Args;
 

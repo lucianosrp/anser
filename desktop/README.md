@@ -58,7 +58,11 @@ anser  ──  core/  (finance-core: cache, sync, ledger, search; UI-free)
   client doesn't care what produces it.
 - The server (`engine/` + `server/`, binary `anser-server`) produces the
   contract and serves `127.0.0.1:8787` by default. See
-  [server/README.md](server/README.md).
+  [server/README.md](server/README.md). The desktop app includes it:
+  `anser server <cmd>` runs the same CLI (`finance_server::cli`), and a
+  local install's server is the app's own binary as `anser server serve`.
+  `anser-server` stays the small headless build for a server such as a Pi
+  (no GUI libraries).
 
 ## Search everything
 
@@ -1284,7 +1288,9 @@ and *Just try it (made-up data)*, over the loading page's dotted watermark
 It isn't counted in the dots.
 
 The cards: where the data lives (desktop only: this machine or another,
-the address, *Connect*, which moves on once the server answers), sign in,
+the address, *Connect*, which moves on once the server answers; on this
+machine the app starts its own binary as `anser server serve`, a child it
+owns and stops when it quits, and reuses a server that already answers), sign in,
 your name, currency and home (the city under *More options*), your picture
 (the avatar editor without the hex field), where is your money (logo chips
 in a two-column grid under Banks, Investments and Crypto headings, from the
@@ -1499,7 +1505,7 @@ machine.
 
 | Check | Shown when | What it looks at | Fix |
 |---|---|---|---|
-| Server | always | `/healthz` and its round trip; what answers (`GET /api/version`, or the `Server` header on older builds); the bundle version against the app's; the last sync and the replica's age (warns past 2 h) | *Sync now*; when unreachable or not configured, a setup form (URL, *Save and test*) and *Start a local anser-server* (when `anser-server` sits next to the binary or on `$PATH`; it binds 127.0.0.1:8787, the app's default server, and the app owns it: it stops when the app quits) |
+| Server | always | `/healthz` and its round trip; what answers (`GET /api/version`, or the `Server` header on older builds); the bundle version against the app's; the last sync and the replica's age (warns past 2 h) | *Sync now*; when unreachable or not configured, a setup form (URL, *Save and test*) and *Start a local server* (the app's own binary as `anser server serve`, always available; it binds 127.0.0.1:8787, the app's default server, and the app owns it: the child's handle, never a process pattern, and it stops with SIGTERM when the app quits) |
 | Tailnet | Tailscale is installed, or the server is a `.ts.net` name | whether the system DNS gives the `.ts.net` name a tailnet address, or only the MagicDNS fallback works; Tailscale's state and the other VPNs found. When another VPN is up and the name doesn't resolve, the summary names it and why (NordVPN, Twingate, Mullvad, ProtonVPN, WARP each have their own wording, anything else a generic one) | shows `sudo resolvectl domain tailscale0 '~ts.net'` to copy (Linux), plus the VPN's own advice (WARP: Zero Trust Local Domain Fallback; Mullvad: split tunneling); on macOS, the VPN's split-tunnel setting in words |
 | Local replica | always | finance.db and export.json present and readable, sizes, `PRAGMA quick_check` on a read-only open, the bundle version | *Sync now* |
 | Sources | always (the web app's Doctor shows it too) | the server's capabilities, from the last synced bundle: every source with data (rows, newest day, last sync), API sources set up but empty (one never set up has no line), and the server's version; an older server without capabilities is a warn | *Open Upload* when there is no data at all |

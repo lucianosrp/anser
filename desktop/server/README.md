@@ -19,6 +19,9 @@ target/release/anser-server serve              # 127.0.0.1:8787
 
 ## Commands
 
+The same commands run from the desktop app as `anser server <cmd>` (the CLI
+is the library's `finance_server::cli`; usage lines name `anser server` there).
+
 | Command | What |
 |---|---|
 | `serve [--bind HOST:PORT] [--push-to URL] [--push-every SECS]` | the API and the web app. Default bind `127.0.0.1:8787` (also the desktop app's default server) |

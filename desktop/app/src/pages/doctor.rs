@@ -14,7 +14,7 @@
 //! knows (the theme, the icon, the logos, its config types) and draws.
 //!
 //! Fixes are one click when they stay inside the app's own files: install or
-//! repair the launcher, sync, set up the server, start a local `anser-server`.
+//! repair the launcher, sync, set up the server, start a local server (`anser server serve`).
 //! Anything that changes system settings (DNS, packages, the compositor) is
 //! shown as a command to copy, never run.
 //!
@@ -243,7 +243,6 @@ impl Doctor {
         self.applicable = CheckId::applicable(&env, &url);
         self.env = Some(env.clone());
         let source = dr::url_source();
-        let can_start = local_server::local_server_bin(&this_exe()).is_some();
         let probe_url = url.clone();
         let remote = cx.background_spawn(async move {
             let probe = dr::probe(&probe_url);
@@ -258,7 +257,7 @@ impl Doctor {
             let now = chrono::Utc::now().timestamp_millis();
             let unused = dr::unused_api_checks(&sources);
             let checks = vec![
-                dr::with_pairing(dr::server_check(&probe_url, source, &probe, local.as_ref(), can_start, now), who.as_ref()),
+                dr::with_pairing(dr::server_check(&probe_url, source, &probe, local.as_ref(), now), who.as_ref()),
                 dr::phone_check(&probe_url, &probe),
                 dr::webapp_check(&probe_url, &probe, missing.as_ref()),
                 dr::ibkr_check(&sources, fmt::hkd),
@@ -401,10 +400,10 @@ impl Doctor {
         self.local = Some(LocalServer::Starting);
         let log = cache::dir().join("anser-server.log");
         let task = cx.background_spawn(async move {
-            local_server::ensure(dr::LOCAL_SERVER, &this_exe(), &log).map(|e| match e {
-                Ensured::Started(pid) => format!("anser-server (pid {pid}) answers on {}. It stops when the app quits; log: {}.",
+            local_server::ensure(dr::LOCAL_SERVER, &log).map(|e| match e {
+                Ensured::Started(pid) => format!("The local server (pid {pid}) answers on {}. It stops when the app quits; log: {}.",
                     dr::LOCAL_SERVER, log.display()),
-                _ => format!("anser-server already answers on {}.", dr::LOCAL_SERVER),
+                _ => format!("A server already answers on {}.", dr::LOCAL_SERVER),
             })
         });
         cx.spawn(async move |this, cx| {
@@ -517,7 +516,7 @@ impl Doctor {
                         Action::SyncNow => ("Sync now", true, self.sync_pending, false, None),
                         Action::SetupServer if from != CheckId::Server => ("Set up server", false, false, false, None),
                         Action::SetupServer => (if self.setup_open { "Hide setup" } else { "Set up server" }, !self.setup_open, false, false, None),
-                        Action::StartLocalServer => ("Start a local anser-server", false, matches!(self.local, Some(LocalServer::Starting)), false, None),
+                        Action::StartLocalServer => ("Start a local server", false, matches!(self.local, Some(LocalServer::Starting)), false, None),
                         Action::OpenUpload => ("Open Upload", true, false, false, None),
                         Action::Pair => (if self.pair_open { "Hide pairing" } else { "Pair this device" }, !self.pair_open, false, false, None),
                         Action::LockReads => ("Lock reads (FINANCE_AUTH=all)", false, false, false, None),
@@ -624,10 +623,9 @@ impl Doctor {
 
     fn setup_form(&self, cx: &mut Context<Self>) -> Div {
         let t = cx.theme().clone();
-        let local_bin = local_server::local_server_bin(&this_exe());
         let local = match &self.local {
             None => None,
-            Some(LocalServer::Starting) => Some(div().text_color(t.muted_foreground).child("starting anser-server…").into_any_element()),
+            Some(LocalServer::Starting) => Some(div().text_color(t.muted_foreground).child("starting the local server…").into_any_element()),
             Some(LocalServer::Failed(e)) => Some(div().text_color(fmt::money_out()).child(e.clone()).into_any_element()),
             Some(LocalServer::Up(s)) => Some(h_flex().gap_2().flex_wrap().items_center()
                 .child(div().text_color(fmt::money_in()).child(s.clone()))
@@ -642,21 +640,18 @@ impl Doctor {
             .border_1()
             .border_color(ui::hairline(cx))
             .child(div().text_size(px(ts::BODY)).font_semibold().child("Server setup"))
-            .child(ui::caption("1. The URL of the finance server: your server's tailnet address, or a local anser-server.", cx))
+            .child(ui::caption("1. The URL of the finance server: your server's tailnet address, or a local one.", cx))
             .child(h_flex().gap_2().flex_wrap().items_center()
                 .child(div().flex_1().min_w(px(220.)).child(Input::new(&self.server_input).small()))
                 .child(Button::new("setup-save").small().primary().label("Save and test")
                     .on_click(cx.listener(|this, _, window, cx| this.save_and_test(window, cx)))))
             .when_some(self.setup_note.clone(), |d, (ok, n)| d.child(div().text_size(px(ts::CAPTION))
                 .text_color(if ok { t.muted_foreground } else { fmt::money_out() }).child(n)))
-            .child(ui::caption(match &local_bin {
-                Some(b) => format!("2. Or run a server on this machine: {}", b.display()),
-                None => "2. Or run a server on this machine: install anser-server with curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh -s -- --server, or build it (cargo build -p finance-server --release).".into(),
-            }, cx))
-            .when(local_bin.is_some(), |d| d.child(h_flex().gap_2().child(
-                Button::new("setup-local").small().outline().label("Start a local anser-server")
+            .child(ui::caption(format!("2. Or run a server on this machine, built into this app (anser server serve on {}).", dr::LOCAL_SERVER), cx))
+            .child(h_flex().gap_2().child(
+                Button::new("setup-local").small().outline().label("Start a local server")
                     .loading(matches!(self.local, Some(LocalServer::Starting)))
-                    .on_click(cx.listener(|this, _, _, cx| { this.start_local(cx); cx.notify(); })))))
+                    .on_click(cx.listener(|this, _, _, cx| { this.start_local(cx); cx.notify(); }))))
             .children(local.map(|l| div().text_size(px(ts::CAPTION)).child(l)))
     }
 

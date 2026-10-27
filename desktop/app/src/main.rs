@@ -3,6 +3,7 @@
 //!   cargo run -p finance-desktop --release
 //!
 //!   anser mcp [--account NAME]   (no window: MCP on stdio, mcp_local.rs)
+//!   anser server <cmd> [args]    (no window: the server CLI, as anser-server)
 //!
 //! Server: $FINANCE_SERVER, else the active account's in
 //!         ~/.config/finance-desktop/profiles.json (the `server` file beside it
@@ -81,6 +82,17 @@ fn main() {
         println!("anser {}", finance_core::VERSION);
         return;
     }
+    // `anser server <cmd>`: the server's whole CLI (finance_server::cli),
+    // what local mode runs as its child; no GPU, profiles or keyring setup
+    if std::env::args().nth(1).as_deref() == Some("server") {
+        let rest: Vec<String> = std::env::args().skip(2).collect();
+        if let Err(e) = finance_server::cli::run_main("anser server", &rest) {
+            // what anser-server's `main() -> Result` prints
+            eprintln!("Error: {e:?}");
+            std::process::exit(1);
+        }
+        return;
+    }
     // `anser mcp`: MCP on stdio over the local copy, before
     // anything that could touch stdout, the GPU or the profiles
     let argv: Vec<String> = std::env::args().collect();
@@ -118,9 +130,8 @@ fn main() {
     // a local install owns its server: started here when nothing answers,
     // stopped when the app quits (never one this app didn't start)
     if let Some(url) = finance_core::cache::saved_server_url().filter(|u| finance_core::local_server::is_loopback(u)) {
-        let exe = std::env::current_exe().ok().and_then(|p| std::fs::canonicalize(p).ok()).unwrap_or_default();
         let log = finance_core::cache::dir().join("anser-server.log");
-        if let Err(e) = finance_core::local_server::ensure(&url, &exe, &log) {
+        if let Err(e) = finance_core::local_server::ensure(&url, &log) {
             eprintln!("anser: local server: {e}");
         }
     }

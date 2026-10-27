@@ -3,7 +3,7 @@
 //! the key management behind Settings.
 //!
 //! * `anser-server mcp [--user NAME|ID]`: MCP over stdio for one user's tree
-//!   (cmd/mcp.rs). Local shell access already, so no switch and no key.
+//!   (cli/mcp.rs). Local shell access already, so no switch and no key.
 //! * `POST /mcp`: JSON-RPC messages (one, or a batch) answered as
 //!   `application/json` (the spec's JSON response mode: no SSE stream, so
 //!   `GET /mcp` is 405), a notifications-only POST as 202 with no body.

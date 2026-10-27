@@ -59,7 +59,7 @@ pub fn relaunch_with(setup: bool) -> ! {
 
 #[cfg(not(target_family = "wasm"))]
 fn relaunch_env(setup: bool, adding: Option<&str>) -> ! {
-    // exec doesn't run Drop: stop the local anser-server this app owns first
+    // exec doesn't run Drop: stop the local server this app owns first
     finance_core::local_server::stop_owned();
     // exe_path: after an update replaced the file, current_exe ends in " (deleted)"
     if let Ok(exe) = finance_core::selfupdate::exe_path() {

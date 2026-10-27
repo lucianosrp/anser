@@ -2,7 +2,7 @@
 //!
 //! * `anser-server mcp [--user NAME|ID]`: the read-only MCP server on stdio,
 //!   for one user's tree (the owner's unless --user names another,
-//!   cmd::dispatch). Local shell access already, so it needs neither the
+//!   cli::dispatch). Local shell access already, so it needs neither the
 //!   `/mcp` switch nor a key.
 //! * `anser-server mcp-key create NAME | list | revoke ID [--user NAME|ID]`:
 //!   the MCP keys of one user: tokens only `/mcp` accepts. `create` prints
@@ -13,8 +13,8 @@
 use anyhow::{bail, Result};
 
 use finance_engine::{db, profile, secrets};
-use finance_server::auth;
-use finance_server::mcp::ServerSource;
+use crate::auth;
+use crate::mcp::ServerSource;
 
 pub fn run(args: &[String]) -> Result<()> {
     super::args::no_args("mcp", args);
@@ -47,19 +47,19 @@ pub fn disable(args: &[String]) -> Result<()> {
     state()
 }
 
-const KEY_USAGE: &str = "usage: anser-server mcp-key create NAME | list | revoke ID  [--user NAME|ID]";
+const KEY_USAGE: &str = "mcp-key create NAME | list | revoke ID  [--user NAME|ID]";
 
 pub fn key(args: &[String]) -> Result<()> {
     auth::bootstrap()?;
     let uid = secrets::active_user();
     match args.first().map(String::as_str) {
         Some("create") => {
-            let Some(name) = args.get(1).filter(|n| args.len() == 2 && !n.trim().is_empty()) else { bail!(KEY_USAGE) };
+            let Some(name) = args.get(1).filter(|n| args.len() == 2 && !n.trim().is_empty()) else { bail!("usage: {} {KEY_USAGE}", super::prog()) };
             let (token, key) = auth::add_mcp_key(uid, name)?;
             println!("MCP key {} \"{}\" for user {uid}. It is shown once; keep it like a password:", key.id, key.name);
             println!("{token}");
             if !profile::mcp_enabled(&db::open()?) {
-                println!("MCP is still off for this user: run anser-server mcp-enable{}", if uid == finance_engine::tenant::OWNER_UID { String::new() } else { format!(" --user {uid}") });
+                println!("MCP is still off for this user: run {} mcp-enable{}", super::prog(), if uid == finance_engine::tenant::OWNER_UID { String::new() } else { format!(" --user {uid}") });
             }
             Ok(())
         }
@@ -71,10 +71,10 @@ pub fn key(args: &[String]) -> Result<()> {
             Ok(())
         }
         Some("revoke") => {
-            let Some(id) = args.get(1).filter(|_| args.len() == 2).and_then(|s| s.parse::<i64>().ok()) else { bail!(KEY_USAGE) };
+            let Some(id) = args.get(1).filter(|_| args.len() == 2).and_then(|s| s.parse::<i64>().ok()) else { bail!("usage: {} {KEY_USAGE}", super::prog()) };
             println!("{}", if auth::revoke_mcp_key(uid, id)? { "revoked" } else { "no such key for this user" });
             Ok(())
         }
-        Some(other) => bail!("{KEY_USAGE}  (unknown: {other})"),
+        Some(other) => bail!("usage: {} {KEY_USAGE}  (unknown: {other})", super::prog()),
     }
 }

@@ -147,7 +147,7 @@ fn covered(lit: &str) -> bool {
 fn every_route_literal_is_listed() {
     let src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
     let mut files = vec![];
-    for d in [src.clone(), src.join("cmd")] {
+    for d in [src.clone(), src.join("cli")] {
         for e in std::fs::read_dir(&d).unwrap().flatten() {
             if e.path().extension().is_some_and(|x| x == "rs") {
                 files.push(e.path());

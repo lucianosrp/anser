@@ -30,7 +30,7 @@ flate2 = "1"
 hex = "0.4"
 # the profile picture: PNG, JPEG or WebP in, a 256x256 PNG out (avatar.rs)
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
-# umask 077 at startup (cmd/serve.rs)
+# umask 077 at startup (cli/serve.rs)
 libc = "0.2"
 md-5 = "0.11"
 rusqlite = { version = "0.40", features = ["bundled", "backup"] }

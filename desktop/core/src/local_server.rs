@@ -1,7 +1,9 @@
 //! A local install's server: when the server URL is on this machine, the app
-//! starts `anser-server serve` itself, as a child it owns, and stops that child
-//! when it quits. A server it did not start (a systemd unit, one run by hand)
-//! is reused and never touched, and a remote server never concerns this module.
+//! starts its own binary as `anser server serve` (the server is built in),
+//! as a child it owns, and stops that child when it quits. The child is
+//! known by its [`Child`] handle (its pid), never by a process pattern. A
+//! server it did not start (a systemd unit, one run by hand) is reused and
+//! never touched, and a remote server never concerns this module.
 
 use std::net::IpAddr;
 use std::path::{Path, PathBuf};
@@ -36,21 +38,7 @@ pub fn is_loopback(url: &str) -> bool {
     host.eq_ignore_ascii_case("localhost") || host.parse::<IpAddr>().is_ok_and(|ip| ip.is_loopback())
 }
 
-/// `anser-server`: beside the app binary, else on `path`, else in `home`'s
-/// `.local/bin` (where the deploy installs it, even when $PATH lacks it).
-pub fn pick_bin(exe: &Path, path: Option<&std::ffi::OsStr>, home: Option<&Path>) -> Option<PathBuf> {
-    let beside = exe.parent().map(|d| d.join("anser-server"));
-    let on_path = path.into_iter().flat_map(|p| std::env::split_paths(p)).map(|d| d.join("anser-server"));
-    let local = home.map(|h| h.join(".local/bin/anser-server"));
-    beside.into_iter().chain(on_path).chain(local).find(|p| p.is_file())
-}
-
-/// [`pick_bin`] for this process.
-pub fn local_server_bin(exe: &Path) -> Option<PathBuf> {
-    pick_bin(exe, std::env::var_os("PATH").as_deref(), dirs::home_dir().as_deref())
-}
-
-/// The documented install's data tree. Set explicitly: anser-server built from a
+/// The documented install's data tree. Set explicitly: the server built from a
 /// checkout would otherwise fall back to that checkout's own data.
 pub fn default_home() -> PathBuf {
     dirs::data_dir().unwrap_or_default().join("finance")
@@ -61,6 +49,16 @@ pub fn child_env(url: &str, home: &Path) -> Vec<(&'static str, String)> {
     let mut env = vec![("FINANCE_HOME", home.display().to_string())];
     env.extend(host_port(url).map(|b| ("FINANCE_BIND", b)));
     env
+}
+
+/// The child: this very binary, `server serve`, with [`child_env`]. The
+/// running executable's path, as the self-update sees it (a replaced file's
+/// " (deleted)" suffix dropped).
+pub fn child_command(url: &str, home: &Path) -> Result<Command> {
+    let exe = crate::selfupdate::exe_path().context("finding this app's binary")?;
+    let mut cmd = Command::new(exe);
+    cmd.args(["server", "serve"]).envs(child_env(url, home));
+    Ok(cmd)
 }
 
 /// A server process this app started.
@@ -79,10 +77,8 @@ impl LocalServer {
         Ok(LocalServer { child })
     }
 
-    pub fn start(bin: &Path, url: &str, log: &Path) -> Result<Self> {
-        let mut cmd = Command::new(bin);
-        cmd.arg("serve").envs(child_env(url, &default_home()));
-        Self::spawn(cmd, log)
+    pub fn start(url: &str, log: &Path) -> Result<Self> {
+        Self::spawn(child_command(url, &default_home())?, log)
     }
 
     pub fn pid(&self) -> u32 {
@@ -141,21 +137,17 @@ pub enum Ensured {
     Started(u32),
 }
 
-pub const NOT_INSTALLED: &str = "anser-server isn't installed on this machine. Install it with \
-    curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh -s -- --server, \
-    or build it with cargo build -p finance-server --release and copy it to ~/.local/bin, then connect again.";
-
-/// Make a loopback `url` answer: reuse what is there, else start anser-server
-/// as an owned child. Blocking (up to ~10 s): call it off the UI thread.
-pub fn ensure(url: &str, exe: &Path, log: &Path) -> Result<Ensured, String> {
+/// Make a loopback `url` answer: reuse what is there, else start
+/// `anser server serve` as an owned child. Blocking (up to ~10 s): call it
+/// off the UI thread.
+pub fn ensure(url: &str, log: &Path) -> Result<Ensured, String> {
     if !is_loopback(url) {
         return Ok(Ensured::Remote);
     }
     if sync::healthz(url).is_ok() {
         return Ok(Ensured::Reused);
     }
-    let bin = local_server_bin(exe).ok_or(NOT_INSTALLED)?;
-    let mut server = LocalServer::start(&bin, url, log).map_err(|e| format!("{e:#}"))?;
+    let mut server = LocalServer::start(url, log).map_err(|e| format!("{e:#}"))?;
     let pid = server.pid();
     let until = Instant::now() + START_WAIT;
     while Instant::now() < until {
@@ -169,10 +161,10 @@ pub fn ensure(url: &str, exe: &Path, log: &Path) -> Result<Ensured, String> {
             return Ok(Ensured::Started(pid));
         }
         if server.exited() {
-            return Err(format!("anser-server stopped right after starting; see {}.", log.display()));
+            return Err(format!("the local server stopped right after starting; see {}.", log.display()));
         }
     }
-    Err(format!("anser-server (pid {pid}) didn't answer within {} s; see {}.", START_WAIT.as_secs(), log.display()))
+    Err(format!("the local server (pid {pid}) didn't answer within {} s; see {}.", START_WAIT.as_secs(), log.display()))
 }
 
 #[cfg(test)]
@@ -198,22 +190,13 @@ mod tests {
     }
 
     #[test]
-    fn binary_beside_the_app_beats_path_beats_local_bin() {
-        let t = std::env::temp_dir().join(format!("fin-bin-{}", std::process::id()));
-        let (app, onpath, home) = (t.join("app"), t.join("path"), t.join("home"));
-        for d in [&app, &onpath, &home.join(".local/bin")] {
-            std::fs::create_dir_all(d).unwrap();
-        }
-        let exe = app.join("finance-desktop");
-        let path = std::env::join_paths([&onpath]).unwrap();
-        assert_eq!(pick_bin(&exe, Some(&path), Some(&home)), None);
-        std::fs::write(home.join(".local/bin/anser-server"), "").unwrap();
-        assert_eq!(pick_bin(&exe, Some(&path), Some(&home)), Some(home.join(".local/bin/anser-server")));
-        std::fs::write(onpath.join("anser-server"), "").unwrap();
-        assert_eq!(pick_bin(&exe, Some(&path), Some(&home)), Some(onpath.join("anser-server")));
-        std::fs::write(app.join("anser-server"), "").unwrap();
-        assert_eq!(pick_bin(&exe, Some(&path), Some(&home)), Some(app.join("anser-server")));
-        let _ = std::fs::remove_dir_all(&t);
+    fn the_child_is_this_binary_running_server_serve() {
+        let cmd = child_command("http://127.0.0.1:8800", Path::new("/h/finance")).unwrap();
+        assert_eq!(Path::new(cmd.get_program()), crate::selfupdate::exe_path().unwrap());
+        assert_eq!(cmd.get_args().collect::<Vec<_>>(), ["server", "serve"]);
+        let mut env: Vec<_> = cmd.get_envs().map(|(k, v)| (k.to_str().unwrap(), v.and_then(|v| v.to_str()))).collect();
+        env.sort();
+        assert_eq!(env, [("FINANCE_BIND", Some("127.0.0.1:8800")), ("FINANCE_HOME", Some("/h/finance"))]);
     }
 
     #[cfg(unix)]
@@ -233,6 +216,6 @@ mod tests {
 
     #[test]
     fn a_remote_url_is_left_alone() {
-        assert_eq!(ensure("http://192.168.1.5:8787", Path::new("/x"), Path::new("/dev/null")), Ok(Ensured::Remote));
+        assert_eq!(ensure("http://192.168.1.5:8787", Path::new("/dev/null")), Ok(Ensured::Remote));
     }
 }

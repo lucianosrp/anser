@@ -5,7 +5,7 @@
 use anyhow::Result;
 
 use finance_engine::{config, fetch};
-use finance_server::syncer;
+use crate::syncer;
 
 use super::args::Args;
 
