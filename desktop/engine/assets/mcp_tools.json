@@ -1,0 +1,105 @@
+[
+ {
+  "name": "summary",
+  "description": "Start here. Net worth now (total and by class), this month so far and the trailing 12 months (income, spending, savings, savings rate), data freshness, and the exact account, category and investment-account names the other tools accept as filters. Call it first in a conversation, then use the other tools to drill in.",
+  "inputSchema": {"type": "object", "properties": {}, "additionalProperties": false}
+ },
+ {
+  "name": "trend",
+  "description": "One monthly series with min, max, average and first-to-last change. Use it for 'how has X moved over time'; use breakdown for 'where did it go' and summary for the current picture.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "metric": {"type": "string", "description": "net_worth, income, spending, savings, savings_rate, 'category:<name>' (monthly spending in a category) or 'account:<name>' (month-end balance of a bank account). Names exactly as summary lists them."},
+    "from_month": {"type": "string", "description": "YYYY-MM. Default: 11 months before to_month."},
+    "to_month": {"type": "string", "description": "YYYY-MM. Default: the last complete month (the current month for net_worth and account balances)."}
+   },
+   "required": ["metric"],
+   "additionalProperties": false
+  }
+ },
+ {
+  "name": "breakdown",
+  "description": "Where the money went (or came from) over a period: totals grouped by category, merchant, account or currency, each with share, transaction count and change against the previous period of the same length. Use it for 'what do I spend on'; use transactions for the individual rows.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "by": {"type": "string", "enum": ["category", "merchant", "account", "currency"], "description": "What to group by."},
+    "kind": {"type": "string", "enum": ["spending", "income"], "description": "Default spending. Transfers between own accounts are excluded from both."},
+    "from_month": {"type": "string", "description": "YYYY-MM. Default: 11 months before to_month."},
+    "to_month": {"type": "string", "description": "YYYY-MM. Default: the last complete month."},
+    "top": {"type": "integer", "description": "Rows to list before summing the rest as Other. Default 15."}
+   },
+   "required": ["by"],
+   "additionalProperties": false
+  }
+ },
+ {
+  "name": "transactions",
+  "description": "Search individual bank and card rows, newest first (or largest first). Use it to find specific payments or to check what a merchant or category was made of; use breakdown for totals. Page through with next_cursor.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "text": {"type": "string", "description": "Case-insensitive text in the description."},
+    "account": {"type": "string", "description": "An account name as summary lists it."},
+    "category": {"type": "string", "description": "A category name as summary lists it."},
+    "from_date": {"type": "string", "description": "YYYY-MM-DD, inclusive."},
+    "to_date": {"type": "string", "description": "YYYY-MM-DD, inclusive."},
+    "min_amount": {"type": "number", "description": "Smallest absolute amount, in the row's own currency."},
+    "max_amount": {"type": "number", "description": "Largest absolute amount, in the row's own currency."},
+    "direction": {"type": "string", "enum": ["in", "out"], "description": "in = money received, out = money spent."},
+    "sort": {"type": "string", "enum": ["date", "amount"], "description": "date (newest first, default) or amount (largest absolute first)."},
+    "limit": {"type": "integer", "description": "Rows per page. Default 50, maximum 500."},
+    "cursor": {"type": "string", "description": "next_cursor of the previous page."}
+   },
+   "additionalProperties": false
+  }
+ },
+ {
+  "name": "recurring",
+  "description": "Subscriptions, bills and other recurring charges detected in the bank rows: cadence, typical amount, monthly-equivalent cost, last and next expected date, and recent price changes, plus the total monthly recurring cost. Use it for 'what am I subscribed to' and fixed-cost questions.",
+  "inputSchema": {"type": "object", "properties": {}, "additionalProperties": false}
+ },
+ {
+  "name": "holdings",
+  "description": "What is owned now across every broker, fund and exchange: per position quantity, price, value, cost, unrealised gain and portfolio weight, optionally grouped. Use it for allocation and 'what do I hold'; use performance for returns over time and activity for the trades.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "account": {"type": "string", "description": "An investment account name as summary lists it."},
+    "class": {"type": "string", "enum": ["equity", "bond", "cash", "crypto", "commodity", "other"], "description": "Only positions of this asset class."},
+    "group_by": {"type": "string", "enum": ["account", "asset_class", "currency"], "description": "Return value and weight per group instead of positions."}
+   },
+   "additionalProperties": false
+  }
+ },
+ {
+  "name": "performance",
+  "description": "How the investments did over a period: value per month, net contributions, gains, time-weighted and money-weighted return, income received, fees and cash drag. Use it for 'am I beating the market' and return questions; use holdings for what is owned and activity for individual trades.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "from_month": {"type": "string", "description": "YYYY-MM. Default: the first month with investments."},
+    "to_month": {"type": "string", "description": "YYYY-MM. Default: the current month."},
+    "account": {"type": "string", "description": "One investment account as summary lists it. Default: everything together."}
+   },
+   "additionalProperties": false
+  }
+ },
+ {
+  "name": "activity",
+  "description": "The investment ledger, newest first: buys, sells, deposits, withdrawals, dividends, interest, fees and taxes from broker trades, fund executions and crypto events. Use it to see what was bought when; with a symbol it adds the average cost and gain of the repeated buys. Use holdings for the current positions.",
+  "inputSchema": {
+   "type": "object",
+   "properties": {
+    "account": {"type": "string", "description": "An investment account name as summary lists it."},
+    "symbol": {"type": "string", "description": "A ticker or crypto asset, e.g. as holdings lists it."},
+    "type": {"type": "string", "enum": ["buy", "sell", "deposit", "withdrawal", "dividend", "interest", "fee", "tax", "reward", "other"], "description": "Only this kind of event."},
+    "from_date": {"type": "string", "description": "YYYY-MM-DD, inclusive."},
+    "to_date": {"type": "string", "description": "YYYY-MM-DD, inclusive."},
+    "limit": {"type": "integer", "description": "Rows to return. Default 50, maximum 500."}
+   },
+   "additionalProperties": false
+  }
+ }
+]

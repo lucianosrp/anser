@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Anser db backup
+
+[Timer]
+OnCalendar=*-*-* 04:15
+# a server that was off at 04:15 backs up on the next boot instead of skipping
+Persistent=true
+
+[Install]
+WantedBy=timers.target

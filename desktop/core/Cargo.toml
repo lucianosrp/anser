@@ -1,0 +1,48 @@
+[package]
+name = "finance-core"
+version = "0.1.0"
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "Data layer for the finance desktop app: local cache, sync, ledger, search. UI-free, so the server shares it too."
+
+[dependencies]
+anyhow = "1"
+# the encrypted local replica (replica.rs): Argon2id for a passphrase key,
+# XChaCha20-Poly1305 for the files (desktop only: the `native` feature)
+argon2 = { version = "0.6", optional = true }
+chacha20poly1305 = { version = "0.11", optional = true }
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+dirs = { version = "7", optional = true }
+# self-update (selfupdate.rs): the release tar.xz (pure-Rust xz) and its checksum
+lzma-rs = { version = "0.3", optional = true }
+sha2 = { version = "0.11", optional = true }
+tar = { version = "0.4", default-features = false, optional = true }
+md-5 = "0.11"
+nucleo-matcher = "0.3"
+rusqlite = { version = "0.40", features = ["bundled", "backup", "serialize"], optional = true }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "3", optional = true }
+# the device token in the OS keyring (desktop app only: the `keyring` feature)
+keyring = { version = "4", optional = true }
+# Doctor: the phone-access QR code (Nayuki, no dependencies)
+qrcodegen = "1.8"
+# the pasted-text check (paste.rs), shared with the engine's SMS parser
+regex = "1"
+
+# stopping the local server child with SIGTERM (local_server.rs)
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[features]
+# Native: the SQLite replica, the HTTP client and the tailnet resolver. The
+# web build (desktop/web, wasm32) turns it off: no rusqlite, no ureq, no
+# filesystem; the ledger arrives as JSON (/api/ledger.json) instead.
+default = ["native"]
+native = ["dep:rusqlite", "dep:ureq", "dep:dirs", "dep:argon2", "dep:chacha20poly1305", "dep:lzma-rs", "dep:sha2", "dep:tar"]
+# the desktop app keeps its device token in the OS keyring (auth.rs); the
+# server (push) and headless builds use the 0600 file only
+keyring = ["native", "dep:keyring"]

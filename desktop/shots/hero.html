@@ -1,0 +1,61 @@
+<!doctype html>
+<!-- The README's hero banner (2560x720 at 2x). Rendered from local files by
+     headless Chrome: see "Hero banner" in desktop/README.md. Images are the
+     pipeline's own shots (demo data only). -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "App"; src: url("../web/fonts/NotoSans-Regular.ttf"); font-weight: 400; }
+  @font-face { font-family: "App"; src: url("../web/fonts/NotoSans-Medium.ttf"); font-weight: 500; }
+  @font-face { font-family: "App"; src: url("../web/fonts/NotoSans-SemiBold.ttf"); font-weight: 600; }
+  @font-face { font-family: "App"; src: url("../web/fonts/NotoSans-Bold.ttf"); font-weight: 700; }
+  @font-face { font-family: "Mono"; src: url("../web/fonts/NotoSansMono-Regular.ttf"); }
+  :root { --ink: #f4ede1; --muted: #b9ab95; --accent: #e0a868; --green: #8fcf9a; }
+  html, body { margin: 0; width: 1280px; height: 360px; overflow: hidden; }
+  body {
+    font-family: "App", sans-serif; color: var(--ink);
+    background:
+      radial-gradient(900px 420px at 92% 10%, rgba(224,168,104,.30), transparent 60%),
+      radial-gradient(700px 380px at 8% 110%, rgba(143,207,154,.12), transparent 60%),
+      linear-gradient(135deg, #17130f 0%, #221a12 55%, #2b2016 100%);
+    position: relative;
+  }
+  .grain { position: absolute; inset: 0; opacity: .06;
+    background-image: radial-gradient(#fff 0.6px, transparent 0.6px); background-size: 3px 3px; }
+  .copy { position: absolute; left: 64px; top: 50px; width: 540px; }
+  .eyebrow { font-family: "Mono", monospace; font-size: 11.5px; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 10px; }
+  .eyebrow::before { content: ""; width: 22px; height: 1.5px; background: var(--accent); }
+  h1 { margin: 14px 0 0; font-size: 62px; line-height: .95; font-weight: 700; letter-spacing: -0.035em; }
+  h1 em { font-family: "C059", serif; font-weight: 400; font-style: italic; letter-spacing: -0.01em; color: var(--accent); }
+  p { margin: 16px 0 0; font-size: 15.5px; line-height: 1.5; color: var(--muted); max-width: 500px; }
+  p b { color: var(--ink); font-weight: 600; }
+  .chips { margin-top: 18px; display: flex; gap: 8px; }
+  .chip { font-size: 12px; font-weight: 500; padding: 6px 11px; border-radius: 999px;
+    border: 1px solid rgba(244,237,225,.16); background: rgba(244,237,225,.05); color: var(--ink); }
+  .chip i { font-style: normal; color: var(--green); margin-right: 6px; }
+  .shot { position: absolute; left: 680px; top: 44px; width: 720px; border-radius: 12px;
+    border: 1px solid rgba(244,237,225,.14); box-shadow: 0 30px 90px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.4);
+    transform: perspective(1400px) rotateY(-8deg) rotateX(2deg); transform-origin: left center; }
+  .phone { position: absolute; left: 610px; top: 112px; width: 128px; border-radius: 22px;
+    border: 5px solid #0d0b09; outline: 1px solid rgba(244,237,225,.18);
+    box-shadow: 0 26px 50px rgba(0,0,0,.65); transform: rotate(-3deg); }
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="copy">
+    <div class="eyebrow">Local-first personal finance</div>
+    <h1>Your money,<br><em>all in one place.</em></h1>
+    <p>Banks, cards, brokers and crypto in one fast app, on <b>your own server</b>. Native desktop, web and phone.</p>
+    <div class="chips">
+      <span class="chip"><i>●</i>Self-hosted</span>
+      <span class="chip"><i>●</i>Encrypted at rest</span>
+      <span class="chip"><i>●</i>Read-only API keys</span>
+    </div>
+  </div>
+  <img class="shot" src="../target/shots/raw/overview-dark.png">
+  <img class="phone" src="../target/shots/raw/overview-phone.png">
+</body>
+</html>

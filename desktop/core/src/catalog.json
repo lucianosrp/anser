@@ -1,0 +1,321 @@
+{
+  "api": [
+    {
+      "key": "binance",
+      "label": "Binance",
+      "kind": "exchange",
+      "group": "crypto",
+      "fields": [
+        {
+          "key": "BINANCE_API_KEY",
+          "label": "API key",
+          "help": "The key Binance shows when you create it.",
+          "secret": false
+        },
+        {
+          "key": "BINANCE_API_SECRET",
+          "label": "Secret key",
+          "help": "Shown once, at creation. Make a new key if you lost it.",
+          "secret": true
+        }
+      ],
+      "instructions": [
+        "Binance: Account, then API Management, then Create API (system generated).",
+        "Leave only Enable Reading ticked. Spot trading, margin, futures, withdrawals and transfers must all be off.",
+        "Restricting the key to your server's IP address is recommended."
+      ],
+      "refuses": "any trading, withdrawal, internal or universal transfer, margin, futures or options permission",
+      "docs_url": "https://www.binance.com/en/support/faq/360002502072"
+    },
+    {
+      "key": "okx",
+      "label": "OKX",
+      "kind": "exchange",
+      "group": "crypto",
+      "fields": [
+        {
+          "key": "OKX_API_KEY",
+          "label": "API key",
+          "help": "From OKX's API page.",
+          "secret": false
+        },
+        {
+          "key": "OKX_API_SECRET",
+          "label": "Secret key",
+          "help": "Shown once, at creation.",
+          "secret": true
+        },
+        {
+          "key": "OKX_PASSPHRASE",
+          "label": "Passphrase",
+          "help": "The passphrase you chose for this key.",
+          "secret": true
+        }
+      ],
+      "instructions": [
+        "OKX: Profile, then API keys, then Create API key (for the API trading purpose).",
+        "Permissions: Read only. Do not tick Trade or Withdraw.",
+        "Set a passphrase; you'll need it here."
+      ],
+      "refuses": "a key whose permissions are anything but read_only",
+      "docs_url": "https://www.okx.com/help/how-can-i-do-api-trading"
+    },
+    {
+      "key": "ibkr",
+      "label": "Interactive Brokers",
+      "kind": "broker",
+      "group": "broker",
+      "fields": [
+        {
+          "key": "IBKR_FLEX_TOKEN",
+          "label": "Flex token",
+          "help": "Flex Web Service token (reporting only: it can't trade). Valid up to a year.",
+          "secret": true
+        },
+        {
+          "key": "IBKR_FLEX_QUERY_ID",
+          "label": "Query ID",
+          "help": "The number of your Activity Flex Query.",
+          "secret": false
+        }
+      ],
+      "instructions": [
+        "Client Portal: Performance & Reports, then Flex Queries.",
+        "Create an Activity Flex Query in XML with: Trades, Open Positions, Cash Report, Net Asset Value (NAV) in Base, Cash Transactions (dividends, withholding tax). Period: last 365 days.",
+        "Flex Web Service Configuration: enable it and generate a token.",
+        "Paste the token and the query's ID here."
+      ],
+      "refuses": "nothing: a Flex token is reporting-only by design; the test checks the statement and the sections in it",
+      "docs_url": "https://www.ibkrguides.com/clientportal/performanceandstatements/flex.htm"
+    }
+  ],
+  "files": [
+    {
+      "key": "n26",
+      "label": "N26",
+      "kind": "bank",
+      "instructions": [
+        "Sign in to N26 on the web (app.n26.com). The CSV export is not in the phone app.",
+        "Open Home, then your account (or a Space), then Downloads.",
+        "Choose Account Activity (CSV) and pick the start and end dates.",
+        "Download the file and upload it here."
+      ],
+      "format": "CSV",
+      "how": [
+        "Sign in to N26 on the web (app.n26.com). The CSV export is not in the phone app.",
+        "Open Home, then your account (or a Space), then Downloads.",
+        "Choose Account Activity (CSV) and pick the start and end dates.",
+        "Download the file and upload it here."
+      ],
+      "docs_url": "https://support.n26.com/en-eu/fixing-an-issue/payments-and-transfers/how-to-export-a-list-of-my-transactions",
+      "notes": "One file per account or Space. Overlapping exports are de-duplicated.",
+      "country": null
+    },
+    {
+      "key": "hsbc_card",
+      "label": "HSBC credit card",
+      "kind": "card",
+      "instructions": [
+        "Sign in to HSBC Hong Kong online banking and open the credit card.",
+        "For a CSV: open the transaction history, then Download, and pick CSV.",
+        "For a PDF: open the e-Statements, then download each month's statement.",
+        "Upload the files here. Both kinds can be mixed."
+      ],
+      "format": "CSV or monthly PDF",
+      "how": [
+        "Sign in to HSBC Hong Kong online banking and open the credit card.",
+        "For a CSV: open the transaction history, then Download, and pick CSV.",
+        "For a PDF: open the e-Statements, then download each month's statement.",
+        "Upload the files here. Both kinds can be mixed."
+      ],
+      "docs_url": null,
+      "notes": "A card is kept out of balances and net worth. A purchase in both a CSV and a statement is counted once.",
+      "country": "HK"
+    },
+    {
+      "key": "hsbc",
+      "label": "HSBC",
+      "kind": "bank",
+      "instructions": [
+        "Sign in to HSBC Hong Kong online banking.",
+        "Open the account, then its transaction history.",
+        "Choose Download, pick the period and the CSV format.",
+        "Keep the file name HSBC gives it (TransactionHistory...) and upload it here."
+      ],
+      "format": "CSV",
+      "how": [
+        "Sign in to HSBC Hong Kong online banking.",
+        "Open the account, then its transaction history.",
+        "Choose Download, pick the period and the CSV format.",
+        "Keep the file name HSBC gives it (TransactionHistory...) and upload it here."
+      ],
+      "docs_url": null,
+      "notes": "The current account, in HKD, with its balance column. Overlapping exports are de-duplicated.",
+      "country": "HK"
+    },
+    {
+      "key": "mox",
+      "label": "Mox",
+      "kind": "bank",
+      "instructions": [
+        "Open the Mox app and go to your account.",
+        "Open Statements (or Documents).",
+        "Download each month's statement PDF.",
+        "Upload the PDFs here."
+      ],
+      "format": "monthly PDF",
+      "how": [
+        "Open the Mox app and go to your account.",
+        "Open Statements (or Documents).",
+        "Download each month's statement PDF.",
+        "Upload the PDFs here."
+      ],
+      "docs_url": null,
+      "notes": "One statement covers every pocket (HKD, USD, ...). Overlapping months are de-duplicated. Mox has no CSV export.",
+      "country": "HK"
+    },
+    {
+      "key": "hsbc_sms",
+      "label": "HSBC unit trust (SMS)",
+      "kind": "fund_units",
+      "instructions": [
+        "HSBC has no export for FlexInvest orders. The text messages it sends for each one are the record.",
+        "On an Android phone, install SMS Backup & Restore.",
+        "In it, choose Set up a backup, keep Messages ticked, and run Back up now to the phone's storage.",
+        "Copy the XML file it makes (sms-YYYYMMDD....xml) to this computer and upload it here."
+      ],
+      "format": "XML backup of text messages",
+      "how": [
+        "HSBC has no export for FlexInvest orders. The text messages it sends for each one are the record.",
+        "On an Android phone, install SMS Backup & Restore.",
+        "In it, choose Set up a backup, keep Messages ticked, and run Back up now to the phone's storage.",
+        "Copy the XML file it makes (sms-YYYYMMDD....xml) to this computer and upload it here."
+      ],
+      "docs_url": "https://play.google.com/store/apps/details?id=com.riteshsahu.SMSBackupRestore",
+      "notes": "Reads the messages that read like 12.345 UNITS U50004 SUBSCRIBED AT HKD 20.1234 PER UNIT. P123456 (also REDEEMED, SWITCHED IN and OUT). Other messages are ignored; overlapping backups add nothing.",
+      "country": null
+    },
+    {
+      "key": "revolut_old_gbp",
+      "label": "Revolut (GBP, legacy)",
+      "kind": "bank",
+      "instructions": [
+        "This is the older Revolut statement layout (columns Paid Out and Paid In, dates like 3 Jan 2021), from the app's old statement export.",
+        "Revolut no longer offers it: use it only for a file you already have.",
+        "Put revolut and gbp in the file name (revolut-gbp-2021.csv): the file is recognised by its name."
+      ],
+      "format": "CSV (old layout)",
+      "how": [
+        "This is the older Revolut statement layout (columns Paid Out and Paid In, dates like 3 Jan 2021), from the app's old statement export.",
+        "Revolut no longer offers it: use it only for a file you already have.",
+        "Put revolut and gbp in the file name (revolut-gbp-2021.csv): the file is recognised by its name."
+      ],
+      "docs_url": null,
+      "notes": "The GBP account only. Newer statements use the Revolut source.",
+      "country": null
+    },
+    {
+      "key": "revolut_new",
+      "label": "Revolut",
+      "kind": "bank",
+      "instructions": [
+        "Open the Revolut app and the account (the currency) you want from Home.",
+        "Tap More, then Statement.",
+        "Choose Excel, CSV or PDF, pick the period, and tap Get statement.",
+        "Upload the file here (a CSV, an Excel workbook or a PDF; Revolut names it account-statement...)."
+      ],
+      "format": "CSV, Excel or PDF",
+      "how": [
+        "Open the Revolut app and the account (the currency) you want from Home.",
+        "Tap More, then Statement.",
+        "Choose Excel, CSV or PDF, pick the period, and tap Get statement.",
+        "Upload the file here (a CSV, an Excel workbook or a PDF; Revolut names it account-statement...)."
+      ],
+      "docs_url": null,
+      "notes": "One file per currency account. Pending and reverted rows are skipped; overlapping exports (CSV, Excel or PDF) are de-duplicated (a PDF's rows match the CSV's by amount and balance, not by description), a vault statement's rows go to a separate Savings account, and rows the legacy GBP statement already holds are skipped.",
+      "country": null
+    },
+    {
+      "key": "revolut",
+      "label": "Revolut (BTC ledger)",
+      "kind": "crypto_wallet",
+      "instructions": [
+        "This is Revolut's old Bitcoin ledger export (columns Paid Out (BTC), Paid In (BTC), Balance (BTC)).",
+        "Revolut no longer offers it: use it only for a file you already have.",
+        "Upload the file as it is, or put revolut and btc in its name."
+      ],
+      "format": "CSV (old BTC ledger)",
+      "how": [
+        "This is Revolut's old Bitcoin ledger export (columns Paid Out (BTC), Paid In (BTC), Balance (BTC)).",
+        "Revolut no longer offers it: use it only for a file you already have.",
+        "Upload the file as it is, or put revolut and btc in its name."
+      ],
+      "docs_url": null,
+      "notes": "Bitcoin bought and sold in Revolut, as crypto events rather than bank rows.",
+      "country": null
+    },
+    {
+      "key": "trezor",
+      "label": "Trezor (cold wallet)",
+      "kind": "crypto_wallet",
+      "instructions": [
+        "Open Trezor Suite and pick the Bitcoin account.",
+        "On its Transactions section, open the three dots menu.",
+        "Choose Export as CSV and save the file.",
+        "Repeat for each account, then upload the files here."
+      ],
+      "format": "CSV",
+      "how": [
+        "Open Trezor Suite and pick the Bitcoin account.",
+        "On its Transactions section, open the three dots menu.",
+        "Choose Export as CSV and save the file.",
+        "Repeat for each account, then upload the files here."
+      ],
+      "docs_url": null,
+      "notes": "One file per account. Overlapping exports are de-duplicated.",
+      "country": null
+    },
+    {
+      "key": "monzo",
+      "label": "Monzo",
+      "kind": "bank",
+      "instructions": [
+        "Open the Monzo app and go to the Account tab.",
+        "Tap Statements and documents (on some versions: the three dots under your card, then Bank statements).",
+        "Pick the date range and the CSV format.",
+        "Save the file and upload it here."
+      ],
+      "format": "CSV",
+      "how": [
+        "Open the Monzo app and go to the Account tab.",
+        "Tap Statements and documents (on some versions: the three dots under your card, then Bank statements).",
+        "Pick the date range and the CSV format.",
+        "Save the file and upload it here."
+      ],
+      "docs_url": null,
+      "notes": "Monzo's own export has no balance column; the balance is worked out from the amounts. Overlapping exports are de-duplicated by transaction ID.",
+      "country": null
+    },
+    {
+      "key": "barclays_uk",
+      "label": "Barclays",
+      "kind": "bank",
+      "instructions": [
+        "Sign in to Barclays online banking.",
+        "Open the account and choose Export (or Download transactions).",
+        "Pick the date range and the CSV format.",
+        "Save the file and upload it here."
+      ],
+      "format": "CSV",
+      "how": [
+        "Sign in to Barclays online banking.",
+        "Open the account and choose Export (or Download transactions).",
+        "Pick the date range and the CSV format.",
+        "Save the file and upload it here."
+      ],
+      "docs_url": null,
+      "notes": "One file per account. The balance is worked out from the amounts. Overlapping exports are de-duplicated.",
+      "country": null
+    }
+  ]
+}

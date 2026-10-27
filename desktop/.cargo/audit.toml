@@ -1,0 +1,9 @@
+# cargo audit (CI runs it from desktop/).
+[advisories]
+ignore = [
+  # crypto-bigint 0.5 timing side channels; fixed only in 0.7.6. It comes in
+  # through age 0.12 -> p256 (the p256 "tag" recipient), which this app never
+  # uses: archives are sealed with a scrypt passphrase or an X25519 key.
+  # Drop this once age moves to crypto-bigint 0.7.
+  "RUSTSEC-2026-0387",
+]

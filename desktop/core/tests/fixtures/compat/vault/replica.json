@@ -1,0 +1,8 @@
+{
+  "encrypted": true,
+  "key": "passphrase",
+  "salt": "66696e616e63652d73616c742d303136",
+  "m_kib": 64,
+  "t": 2,
+  "check": "46494e524550310a426618145eea5bc9faf84c34c1e989f54bd59d01f6bab2c6867a480f6fffd5ede537317952c73dd86103fc6d32d59c439fa406151ba72cf4f276116012"
+}

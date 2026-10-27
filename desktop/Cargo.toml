@@ -1,0 +1,31 @@
+[workspace]
+resolver = "2"
+members = ["core", "app", "engine", "server", "web", "shots"]
+# shots (README screenshots through headless Chrome) is opt-in: a plain
+# `cargo build` / `cargo test` here leaves it out; `-p finance-shots` or
+# `--workspace` take it in
+default-members = ["core", "app", "engine", "server", "web"]
+
+[workspace.package]
+edition = "2021"
+publish = false
+license = "MIT"
+repository = "https://github.com/lucianosrp/anser"
+# no let chains in the code; the newest dependency floor (oo7) is 1.92
+rust-version = "1.92"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
+# Full debuginfo ballooned target/ to 265 GiB; line tables keep file:line
+# in backtraces at a fraction of the size
+[profile.dev]
+debug = "line-tables-only"
+
+# GPUI is heavy to build; optimize dependencies even in debug so the dev
+# binary stays responsive while our own code compiles fast
+[profile.dev.package."*"]
+opt-level = 2
+debug = false

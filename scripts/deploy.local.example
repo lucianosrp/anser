@@ -1,0 +1,12 @@
+# scripts/deploy.local: where scripts/deploy.sh ships to. Copy this file to
+# scripts/deploy.local (gitignored) and edit it; it is sourced by bash.
+
+# ssh destinations for your server, separated by spaces: the first that
+# answers wins (e.g. an ~/.ssh/config alias on the home LAN, then one over
+# Tailscale). A FINANCE_HOST in the environment overrides this.
+FINANCE_HOST="my-server my-server-tailnet"
+
+# Optional (defaults shown):
+# REMOTE_DIR='~/finance'   # the checkout on the server
+# PORT=8787                # where anser-server listens (for the health check)
+# BRANCH=main              # the branch that ships

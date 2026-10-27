@@ -1,0 +1,36 @@
+# Barclays (UK): the CSV from online banking's "Export" on an account.
+# A finance format definition (see desktop/docs/formats.md). Modeled on
+# Barclays' export layout; the sample in docs/formats/samples is synthetic.
+# If your export differs, copy this file into your formats directory, fix
+# it, and your copy overrides this built-in one.
+
+id = "barclays_uk"
+label = "Barclays"
+institution = "Barclays Bank UK"
+country = "GB"
+kind = "bank"
+currency = "GBP"
+# no balance column: the balance is the running sum of the amounts
+balance_method = "cumsum"
+
+[detect]
+columns = ["Number", "Date", "Account", "Amount", "Subcategory", "Memo"]
+
+[columns]
+date = "Date"
+amount = "Amount"
+description = "Memo"
+account = "Account"
+
+[parse]
+date_format = "%d/%m/%Y"
+
+[export]
+format = "CSV"
+how = [
+  "Sign in to Barclays online banking.",
+  "Open the account and choose Export (or Download transactions).",
+  "Pick the date range and the CSV format.",
+  "Save the file and upload it here.",
+]
+notes = "One file per account. The balance is worked out from the amounts. Overlapping exports are de-duplicated."

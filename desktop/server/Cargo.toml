@@ -1,0 +1,45 @@
+[package]
+name = "finance-server"
+version = "0.1.0"
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "The finance server: HTTP API + sync contract + web app hosting + MCP + CLI. Runs on your server, or locally and pushes to it when it is reachable."
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "anser-server"
+path = "src/main.rs"
+
+[features]
+# hold/panic hooks and engine tail counters for warm-start tests
+test-hooks = ["finance-engine/test-hooks"]
+
+[dependencies]
+anyhow = "1"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+# tailnet resolver (push) and the desktop app's saved server URL
+finance-core = { path = "../core" }
+finance-engine = { path = "../engine" }
+# gzip for /api/ledger.json (the web app's data) on the phone's link
+flate2 = "1"
+hex = "0.4"
+# the profile picture: PNG, JPEG or WebP in, a 256x256 PNG out (avatar.rs)
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
+# umask 077 at startup (cmd/serve.rs)
+libc = "0.2"
+md-5 = "0.11"
+rusqlite = { version = "0.40", features = ["bundled", "backup"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+# device token and pairing code hashes (auth.rs)
+sha2 = "0.11"
+tiny_http = "0.12"
+ureq = "3"
+
+[dev-dependencies]
+finance-engine = { path = "../engine", features = ["test-hooks"] }

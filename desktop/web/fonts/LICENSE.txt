@@ -1,0 +1,30 @@
+Noto Sans / Noto Sans Mono, subset to Latin, Latin-1, Latin Extended-A, Greek and
+common symbols (fontTools subset, hinting dropped) for the web build.
+
+Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic).
+Licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org
+
+DejaVu Sans, subset to the braille block U+2800-28FF only (DejaVuSans-Braille.ttf),
+for the braille loading animations (desktop and web).
+
+Copyright (c) 2003 Bitstream, Inc.; DejaVu changes are in the public domain.
+Licensed under the Bitstream Vera / DejaVu Fonts License:
+https://dejavu-fonts.github.io/License.html
+
+JetBrains Mono NL (Regular, Medium, Bold), subset the same way plus box drawing
+and block elements (U+2500-25FF), for the Terminal theme (desktop and web).
+
+Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono).
+Licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org
+
+Noto Serif Italic, subset to Basic Latin, Latin-1 and common punctuation
+(U+0020-007E, U+00A0-00FF, U+2018-201D, U+2026; NotoSerif-Italic-subset.ttf), for the
+welcome card's accent line (desktop and web).
+
+Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic).
+Licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org
+
+Full license texts: OFL.txt (SIL Open Font License 1.1, for the Noto and
+JetBrains Mono fonts) and LICENSE-DejaVu.txt (Bitstream Vera / DejaVu Fonts
+License, for DejaVuSans-Braille.ttf). They travel with the web app release
+tarball. See also THIRD_PARTY_NOTICES.md at the repository root.

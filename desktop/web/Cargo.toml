@@ -1,0 +1,34 @@
+[package]
+name = "finance-web"
+version = "0.1.0"
+edition = "2024"
+publish.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "The desktop app in the browser: the same GPUI pages (desktop/app/src) built for wasm32 on gpui's web backend, reading the server it is served from."
+
+# Build with desktop/scripts/build-web.sh (wasm32-unknown-unknown + wasm-bindgen).
+# On the host target this crate is empty, so `cargo build --workspace` stays cheap.
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "src/lib.rs"
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+anyhow = "1"
+# wasmbind: Utc::now / Local::now through js Date (std's clock panics on wasm32)
+chrono = { version = "0.4", default-features = false, features = ["std", "clock", "wasmbind"] }
+dirs = "7"
+finance-core = { path = "../core", default-features = false }
+gpui-kit = "0.7.3"
+js-sys = "0.3"
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "1"
+wasm-bindgen = "=0.2.129"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = ["Window", "Location", "Response", "Storage", "Crypto", "Document", "MediaQueryList", "Navigator", "Element", "HtmlElement", "console",
+  "Request", "RequestInit", "RequestCredentials", "Headers", "HtmlInputElement", "FileList", "File", "Blob", "FormData", "Url", "HtmlAnchorElement"] }
+web-time = "1"

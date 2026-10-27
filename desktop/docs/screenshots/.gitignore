@@ -1,0 +1,9 @@
+# finance-shots writes every shot here (cargo run -p finance-shots --release).
+# Only the ones desktop/README.md shows are committed; the rest, WebP and
+# the video are regenerated on demand.
+*
+!.gitignore
+!overview-split.png
+!travel.png
+!overview-phone.png
+!hero.png

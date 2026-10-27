@@ -1,0 +1,7 @@
+[Unit]
+Description=Anser db backup (data/backups/, newest 14 kept)
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/finance
+ExecStart=%h/.local/bin/anser-server backup --keep 14

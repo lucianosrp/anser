@@ -1,0 +1,28 @@
+[package]
+name = "finance-shots"
+version = "0.1.0"
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "README and website screenshots of the web app on the made-up demo household: a throwaway anser-server, headless Chrome over CDP, then framed in Rust. Opt-in: not a default workspace member."
+
+[[bin]]
+name = "finance-shots"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+base64 = "0.23"
+# PNG in and out (Best compression), lossless WebP out
+image = { version = "0.25", default-features = false, features = ["png", "webp"] }
+# SIGTERM to the processes it started
+libc = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# the compositing: gradients, rounded clips, anti-aliased paths
+tiny-skia = { version = "0.11", default-features = false, features = ["std", "simd"] }
+toml = "1"
+# CDP is JSON over one websocket to 127.0.0.1: the plain client, no TLS
+tungstenite = { version = "0.26", default-features = false, features = ["handshake"] }

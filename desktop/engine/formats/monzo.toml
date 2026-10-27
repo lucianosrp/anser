@@ -1,0 +1,38 @@
+# Monzo (UK) current account: the CSV from the app's "Export transactions".
+# A finance format definition (see desktop/docs/formats.md). Modeled on
+# Monzo's published export layout; the sample in docs/formats/samples is
+# synthetic. If your export differs, copy this file into your formats
+# directory, fix it, and your copy overrides this built-in one.
+
+id = "monzo"
+label = "Monzo"
+institution = "Monzo Bank"
+country = "GB"
+kind = "bank"
+currency = "GBP"
+# no balance column: the balance is the running sum of the amounts
+balance_method = "cumsum"
+# every row has a unique transaction id, so two identical same-day coffees
+# stay two rows
+dedup = ["Transaction ID"]
+
+[detect]
+columns = ["Transaction ID", "Date", "Time", "Type", "Name", "Amount", "Currency"]
+
+[columns]
+date = "Date"
+amount = "Amount"
+description = "Description"
+
+[parse]
+date_format = "%d/%m/%Y"
+
+[export]
+format = "CSV"
+how = [
+  "Open the Monzo app and go to the Account tab.",
+  "Tap Statements and documents (on some versions: the three dots under your card, then Bank statements).",
+  "Pick the date range and the CSV format.",
+  "Save the file and upload it here.",
+]
+notes = "Monzo's own export has no balance column; the balance is worked out from the amounts. Overlapping exports are de-duplicated by transaction ID."

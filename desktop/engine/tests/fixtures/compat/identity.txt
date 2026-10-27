@@ -1,0 +1,4 @@
+# A throwaway age key for synthetic test fixtures only: it protects no real data.
+# finance backup key, created 2026-10-13T09:41:54Z
+# public key: age16mm25dz7qmj6e68g4wwrzdkxgl74enku6nfh22zm53gppupyqfqs27euyn
+AGE-SECRET-KEY-1P8ZL0HJQRGSM6CTMQ2S8KWTRRNUYPGN3K30M8VU2TVQH4YMXK0DQRQHU4Z

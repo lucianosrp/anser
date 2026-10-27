@@ -1,0 +1,27 @@
+[package]
+name = "finance-desktop"
+version = "0.1.0"
+edition = "2024"
+publish.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+description = "Native, local-first finance dashboard (GPUI)."
+
+[[bin]]
+name = "anser"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
+dirs = "7"
+finance-core = { path = "../core", features = ["keyring"] }
+# the Upload page parses and dedupes locally, with the server's own code
+finance-engine = { path = "../engine" }
+gpui-kit = "0.7.3"
+rusqlite = { version = "0.40", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "1"
+web-time = "1"

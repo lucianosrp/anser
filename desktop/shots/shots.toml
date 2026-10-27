@@ -1,0 +1,266 @@
+# The screenshots `cargo run -p finance-shots --release` takes, in order.
+# Each is the web app on the demo household (?demo=1), framed.
+#
+#   name      the file: <out>/<name>.png
+#   page      overview, spending, budgets, travel, transactions, review,
+#             subscriptions, cashflow, investments, banks, crypto, broker,
+#             categories, settings, doctor
+#   tab       investments: overview holdings contributions income habits allocation
+#             broker: monitoring deep; categories: rules suggest; spending: home;
+#             settings: general account data home sync
+#   size      desktop (1440x900 @2x, default), wide (1680x1050 @2x), phone (390x844 @3x);
+#             tall (1440x2400 @1x) and phone-tall (390x1800 @2x) show a whole long page, for checking
+#   mode      dark (default) or light
+#   palette   warm (default), nord, catppuccin, gruvbox, tokyo-night, rose-pine, terminal
+#   hover     pin the line charts' readout at this fraction of their width
+#   map_hover pin the travel map's readout on this stop
+#   keys      false: hide the keyboard hints (default: shown on desktop sizes)
+#   query     more of the page's query (key=value&...), e.g. "month=2026-08"
+#   frame     window (default), phone (default for size = "phone") or none
+#   backdrop  warm paper nord frost mocha latte tokyo rose dawn gruvbox terminal
+#             (default: the palette's, in its mode)
+#   pair      true: the other mode too, the two split diagonally
+
+[[shot]]
+name = "overview-dark"
+page = "overview"
+
+[[shot]]
+name = "overview-light"
+page = "overview"
+mode = "light"
+
+[[shot]]
+name = "overview-split"
+page = "overview"
+pair = true
+keys = false
+
+[[shot]]
+name = "spending"
+page = "spending"
+palette = "nord"
+
+[[shot]]
+name = "spending-home"
+page = "spending"
+tab = "home"
+palette = "nord"
+
+[[shot]]
+name = "travel"
+page = "travel"
+palette = "catppuccin"
+map_hover = 2
+keys = false
+
+[[shot]]
+name = "investments-jkb"
+page = "investments"
+tab = "habits"
+hover = 0.62
+
+[[shot]]
+name = "broker"
+page = "broker"
+palette = "tokyo-night"
+
+[[shot]]
+name = "categories"
+page = "categories"
+mode = "light"
+palette = "rose-pine"
+
+[[shot]]
+name = "overview-phone"
+page = "overview"
+size = "phone"
+
+# ---- every page (2026-10-07) ----
+
+[[shot]]
+name = "budgets"
+page = "budgets"
+palette = "gruvbox"
+
+[[shot]]
+name = "transactions"
+page = "transactions"
+mode = "light"
+
+[[shot]]
+name = "review"
+page = "review"
+palette = "rose-pine"
+
+[[shot]]
+name = "subscriptions"
+page = "subscriptions"
+palette = "nord"
+mode = "light"
+
+[[shot]]
+name = "cashflow"
+page = "cashflow"
+palette = "tokyo-night"
+
+[[shot]]
+name = "investments-overview"
+page = "investments"
+tab = "overview"
+
+[[shot]]
+name = "investments-holdings"
+page = "investments"
+tab = "holdings"
+mode = "light"
+
+[[shot]]
+name = "investments-contributions"
+page = "investments"
+tab = "contributions"
+palette = "catppuccin"
+hover = 0.7
+
+[[shot]]
+name = "investments-income"
+page = "investments"
+tab = "income"
+palette = "nord"
+
+[[shot]]
+name = "investments-allocation"
+page = "investments"
+tab = "allocation"
+palette = "gruvbox"
+mode = "light"
+
+[[shot]]
+name = "banks"
+page = "banks"
+palette = "rose-pine"
+mode = "light"
+
+[[shot]]
+name = "crypto"
+page = "crypto"
+palette = "tokyo-night"
+hover = 0.55
+
+[[shot]]
+name = "broker-deep"
+page = "broker"
+tab = "deep"
+
+[[shot]]
+name = "categories-rules"
+page = "categories"
+tab = "rules"
+palette = "nord"
+
+[[shot]]
+name = "settings"
+page = "settings"
+
+[[shot]]
+name = "settings-home"
+page = "settings"
+tab = "home"
+palette = "nord"
+
+[[shot]]
+name = "spending-phone"
+page = "spending"
+size = "phone"
+palette = "nord"
+
+[[shot]]
+name = "investments-phone"
+page = "investments"
+size = "phone"
+mode = "light"
+
+[[shot]]
+name = "travel-phone"
+page = "travel"
+size = "phone"
+palette = "catppuccin"
+
+[[shot]]
+name = "overview-terminal"
+page = "overview"
+palette = "terminal"
+
+[[shot]]
+name = "investments-terminal"
+page = "investments"
+palette = "terminal"
+mode = "light"
+
+[[shot]]
+name = "overview-terminal-phone"
+page = "overview"
+size = "phone"
+palette = "terminal"
+
+# ---- the setup wizard (the web dev aid ?onboarding=<step>) ----
+
+[[shot]]
+name = "onboarding-welcome-dark"
+query = "onboarding=welcome&still=1"
+
+[[shot]]
+name = "onboarding-welcome-light"
+query = "onboarding=welcome&still=1"
+mode = "light"
+
+[[shot]]
+name = "onboarding-welcome-phone-dark"
+query = "onboarding=welcome&still=1"
+size = "phone"
+
+[[shot]]
+name = "onboarding-welcome-phone-light"
+query = "onboarding=welcome&still=1"
+size = "phone"
+mode = "light"
+
+[[shot]]
+name = "onboarding-money-dark"
+query = "onboarding=money"
+
+[[shot]]
+name = "onboarding-money-light"
+query = "onboarding=money"
+mode = "light"
+
+[[shot]]
+name = "onboarding-money-phone-dark"
+query = "onboarding=money"
+size = "phone"
+
+[[shot]]
+name = "onboarding-money-phone-light"
+query = "onboarding=money"
+size = "phone"
+mode = "light"
+
+[[shot]]
+name = "onboarding-you-dark"
+query = "onboarding=you"
+
+[[shot]]
+name = "onboarding-you-light"
+query = "onboarding=you"
+mode = "light"
+
+[[shot]]
+name = "onboarding-you-phone-dark"
+query = "onboarding=you"
+size = "phone"
+
+[[shot]]
+name = "onboarding-you-phone-light"
+query = "onboarding=you"
+size = "phone"
+mode = "light"

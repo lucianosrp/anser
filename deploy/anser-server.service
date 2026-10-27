@@ -1,0 +1,23 @@
+# Anser server (user unit): anser-server on 127.0.0.1:8787, fronted by
+# tailscale serve.
+#   install: scripts/deploy.sh --install-units
+#   logs:    journalctl --user -u anser-server -f
+[Unit]
+Description=Anser server (Rust, 127.0.0.1:8787, fronted by tailscale serve)
+Documentation=file://%h/finance/DEPLOY.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/finance
+# the data tree (data/, transactions/, .env) lives in the checkout
+Environment=FINANCE_HOME=%h/finance
+Environment=FINANCE_BIND=127.0.0.1:8787
+# installed by scripts/deploy.sh (the build dir is cleaned after each build)
+ExecStart=%h/.local/bin/anser-server serve
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

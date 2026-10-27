@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1c1b19">
+<meta name="description" content="Your finances, local-first.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Anser">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Anser</title>
+<link rel="manifest" href="/app/manifest.webmanifest">
+<link rel="icon" href="/app/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/app/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/app/apple-touch-icon.png">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg, #1c1b19); overscroll-behavior: none; }
+  body { touch-action: none; -webkit-user-select: none; user-select: none; }
+  canvas { display: block; }
+  #boot { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+          font: 14px system-ui, sans-serif; color: #a8a29e; pointer-events: none; }
+  #boot:empty { display: none; }
+  /* above the canvas, clear of the notch */
+  #update { position: fixed; z-index: 10; left: 50%; transform: translateX(-50%);
+            top: calc(env(safe-area-inset-top, 0px) + 10px); display: none; align-items: center; gap: 12px;
+            padding: 8px 8px 8px 14px; border-radius: 10px; background: #2a2825; color: #e7e2da;
+            border: 1px solid #3a3733; box-shadow: 0 6px 24px rgb(0 0 0 / .45);
+            font: 13px system-ui, sans-serif; white-space: nowrap; }
+  #update.on { display: flex; }
+  #update button { font: inherit; font-weight: 600; color: #1c1b19; background: #d39a5f; border: 0;
+                   border-radius: 7px; padding: 6px 12px; cursor: pointer; }
+</style>
+<script>
+  // the saved theme's background (lib.rs THEME_BG_KEY) from the first paint,
+  // not the default's until the wasm has loaded
+  try {
+    const bg = localStorage.getItem('finance-theme-bg') || '';
+    if (/^#[0-9a-f]{6}$/i.test(bg)) {
+      document.documentElement.style.setProperty('--bg', bg);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg);
+    }
+  } catch (e) {}
+</script>
+</head>
+<body>
+<div id="boot">Loading…</div>
+<div id="update" role="status">Update available<button type="button">Reload</button></div>
+<script type="module">
+  // absolute: the server answers this page at / and at /app/
+  import init from '/app/finance_web.js';
+  init({ module_or_path: '/app/finance_web_bg.wasm' }).catch((e) => {
+    document.getElementById('boot').textContent = 'Could not start: ' + e;
+    console.error(e);
+  });
+
+  // installable app: the shell works offline once the service worker has
+  // it (/sw.js); a new build waits until the owner says reload
+  if ('serviceWorker' in navigator) {
+    const banner = document.getElementById('update');
+    let waiting = null;
+    const offer = (w) => { waiting = w; banner.classList.add('on'); };
+    banner.querySelector('button').addEventListener('click', () => {
+      banner.classList.remove('on');
+      if (waiting) waiting.postMessage('skip-waiting');
+    });
+    // the new worker took over: load the new build (not on the first install)
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController) location.reload(); });
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).then((reg) => {
+      if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing;
+        w?.addEventListener('statechange', () => {
+          if (w.state === 'installed' && navigator.serviceWorker.controller) offer(w);
+        });
+      });
+      // look for a new build when the app comes back to the front, and hourly
+      const check = () => reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+      setInterval(check, 60 * 60 * 1000);
+    }).catch((e) => console.warn('service worker:', e));
+  }
+</script>
+</body>
+</html>

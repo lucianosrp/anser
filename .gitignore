@@ -1,0 +1,46 @@
+# Secrets -- never commit
+.env
+.env.*
+!.env.example
+# the server's encrypted API keys and their master key (secrets/master.key)
+secrets/
+
+# Personal financial data -- stays local, never in git history
+transactions/
+# a household's other members: each user's own tree (users/<uid>/)
+users/
+
+# Local data (sqlite db, generated artifacts)
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.finance
+*.png
+# the web app's icons (drawn from web/icon.svg, no data)
+!desktop/web/icons/*.png
+# README screenshots (the demo household only)
+!desktop/docs/screenshots/*.png
+balance_sheet.csv
+
+# Agent knowledge base -- personal financial facts, stays local (README is the
+# only tracked file: it explains the folder, no data)
+knowledge/*
+!knowledge/README.md
+
+# Your deploy target (scripts/deploy.local.example shows the format)
+scripts/deploy.local
+
+# local slide decks and backups of .env
+presentation/
+.env.bak
+
+# Rust build output
+desktop/target/
+
+# a local CLAUDE.md -> AGENTS.md symlink (Claude Code reads CLAUDE.md)
+/CLAUDE.md
+
+# coding agents' local state (worktrees, settings)
+.claude/

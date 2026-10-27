@@ -1,0 +1,7 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_0000AAAA0000000000000001,01/03/2026,08:12:44,Card payment,Pret A Manger,,Eating out,-4.35,GBP,-4.35,GBP,,,,PRET A MANGER LONDON GBR,,-4.35,
+tx_0000AAAA0000000000000002,01/03/2026,08:13:02,Card payment,Pret A Manger,,Eating out,-4.35,GBP,-4.35,GBP,,,,PRET A MANGER LONDON GBR,,-4.35,
+tx_0000AAAA0000000000000003,02/03/2026,12:40:10,Faster payment,Example Employer Ltd,,Income,2450.00,GBP,2450.00,GBP,March salary,,,EXAMPLE EMPLOYER LTD,,,2450.00
+tx_0000AAAA0000000000000004,03/03/2026,19:05:51,Card payment,Tesco,,Groceries,-38.12,GBP,-38.12,GBP,,,,TESCO STORES 3297 LONDON GBR,,-38.12,
+tx_0000AAAA0000000000000005,05/03/2026,07:55:00,Direct Debit,Example Energy,,Bills,-92.00,GBP,-92.00,GBP,,,,EXAMPLE ENERGY DD,,-92.00,
+tx_0000AAAA0000000000000006,07/03/2026,21:30:12,Card payment,Example Cafe Lisbon,,Eating out,-11.20,GBP,-13.00,EUR,,,,EXAMPLE CAFE LISBOA PRT,,-11.20,
