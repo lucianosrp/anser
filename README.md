@@ -37,16 +37,18 @@ On Linux, the latest GitHub Release:
 curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh
 ```
 
-That puts `anser` in `~/.local/bin` (x86_64) and a launcher entry.
-No sudo. Checksums are verified against `SHA256SUMS`. The desktop alone talks
-to a server elsewhere (your tailnet). For a one-machine setup, where the data
-lives on this machine too, install both with `--both`: the app then starts
-and stops a local server itself (its own binary, as `anser server serve`),
-with its data in `~/.local/share/finance`.
+That puts `anser` in `~/.local/bin` (x86_64) and a launcher entry: one
+binary, with the server built in. No sudo. Checksums are verified against
+`SHA256SUMS`. The app can talk to a server elsewhere (your tailnet), or run
+one itself on this machine (`anser server serve`, data in
+`~/.local/share/finance`).
+
+For a box without a screen (a Raspberry Pi, a home server, a VPS), `--server`
+installs the small headless `anser-server` instead; it is the default on
+aarch64. Same commands as `anser server`.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh -s -- --server   # anser-server (x86_64 or aarch64)
-curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh -s -- --both
 FINANCE_VERSION=v0.1.0 sh install.sh --server     # a specific tag
 ```
 
