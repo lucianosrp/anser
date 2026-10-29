@@ -296,6 +296,25 @@ through the server.
   categories' kind, fixed and reimbursable flags; a category the table
   doesn't know (an older replica has no table) reads as before.
 
+## Source tracking
+
+**Source tracking** (sidebar, under Categories) draws every data source as a
+bar on one timeline, from its first row to its last: banks, cards, funds,
+crypto and the broker, each group in its own chart colour. An exchange or
+the broker runs to its last sync. A bank or card statement with more than 45
+days between two rows shows a break, which is usually a missing statement. A
+source with no data for 90 days is drawn faded as *ended*.
+
+The right-hand column says how old each source's data is. When a bank's
+statements stop a week or more before the broker's or an exchange's data,
+a note above the chart names it and marks the missing stretch. A transfer
+from that bank after its last statement is already in the investments but
+not yet out of the cash, so net worth counts it twice until the newer
+statement is uploaded. *12 months* and *All time* switch the range
+(`FINANCE_DESKTOP_COVERAGE=all`, web `?coverage=all`). The spans come from
+the server's capabilities and the holes from the local ledger
+(`finance_core::coverage`).
+
 ## Budgets (Ctrl+3)
 
 Budgets, the cash-flow calendar and saved filters live on the server
