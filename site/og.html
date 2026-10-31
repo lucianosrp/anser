@@ -1,0 +1,73 @@
+<!doctype html>
+<!-- The social card, site/og.png (1200x630). Render it with headless Chrome at 1x:
+     google-chrome-stable --headless=new --disable-gpu --hide-scrollbars --window-size=1200,630 \
+       --screenshot=site/og.png file://$PWD/site/og.html
+     Images are the demo household's screenshots (made-up data only). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>Anser social card</title>
+<style>
+  @font-face { font-family: "App"; src: url("fonts/NotoSans-Regular.ttf"); font-weight: 400; }
+  @font-face { font-family: "App"; src: url("fonts/NotoSans-Medium.ttf"); font-weight: 500; }
+  @font-face { font-family: "App"; src: url("fonts/NotoSans-Bold.ttf"); font-weight: 700; }
+  @font-face { font-family: "Mono"; src: url("fonts/NotoSansMono-Regular.ttf"); }
+  @font-face { font-family: "Accent"; src: url("fonts/NotoSerif-Italic-subset.ttf"); font-style: italic; }
+  :root { --ink: #f4ede1; --muted: #b9ab95; --accent: #e0a868; --green: #8fcf9a; }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    font-family: "App", sans-serif; color: var(--ink); position: relative;
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(900px 520px at 92% 8%, rgba(224,168,104,.30), transparent 60%),
+      radial-gradient(760px 440px at 6% 108%, rgba(143,207,154,.12), transparent 60%),
+      linear-gradient(135deg, #17130f 0%, #221a12 55%, #2b2016 100%);
+  }
+  .grain { position: absolute; inset: 0; opacity: .06; z-index: 9;
+    background-image: radial-gradient(#fff .6px, transparent .6px); background-size: 3px 3px; }
+  .wordmark { position: absolute; left: 64px; top: 52px; display: flex; align-items: center; gap: 14px;
+    font-weight: 700; font-size: 34px; letter-spacing: -0.03em; }
+  .wordmark svg { width: 44px; height: 44px; }
+  .copy { position: absolute; left: 64px; top: 168px; width: 560px; }
+  .eyebrow { font-family: "Mono", monospace; font-size: 15px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--accent); display: flex; align-items: center; gap: 12px; }
+  .eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--accent); }
+  h1 { margin: 20px 0 0; font-size: 68px; line-height: .96; font-weight: 700; letter-spacing: -0.04em; }
+  h1 em { display: block; font-family: "Accent", serif; font-weight: 400; font-style: italic; letter-spacing: -0.01em; color: var(--accent); white-space: nowrap; }
+  p { margin: 26px 0 0; font-size: 21px; line-height: 1.45; color: var(--muted); max-width: 470px; }
+  p b { color: var(--ink); font-weight: 500; }
+  .chips { position: absolute; left: 64px; bottom: 54px; display: flex; gap: 10px; }
+  .chip { font-size: 16px; font-weight: 500; padding: 9px 15px; border-radius: 999px; display: flex; align-items: center; gap: 9px;
+    border: 1px solid rgba(244,237,225,.16); background: rgba(244,237,225,.05); }
+  .chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .shot { position: absolute; left: 690px; top: 96px; width: 720px; border-radius: 12px;
+    box-shadow: 0 0 0 1px rgba(244,237,225,.14), 0 30px 90px rgba(0,0,0,.6);
+    transform: perspective(1400px) rotateY(-9deg) rotateX(2deg); transform-origin: left center; }
+  .phone { position: absolute; left: 652px; top: 262px; width: 144px;
+    filter: drop-shadow(0 24px 40px rgba(0,0,0,.65)); transform: rotate(-3deg); }
+</style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="wordmark">
+    <svg viewBox="0 0 64 64" aria-hidden="true">
+      <rect width="64" height="64" rx="14" fill="#2a2018" stroke="rgba(244,237,225,.16)"/>
+      <path d="M17 50 L32 13 L47 50" fill="none" stroke="#e0a868" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M23.5 37 H40.5" stroke="#8fcf9a" stroke-width="5.5" stroke-linecap="round"/>
+    </svg>Anser
+  </div>
+  <div class="copy">
+    <div class="eyebrow">Local-first personal finance</div>
+    <h1>Your money,<em>all in one place.</em></h1>
+    <p>Banks, cards, brokers and crypto in one fast app, on <b>your own server</b>.</p>
+  </div>
+  <div class="chips">
+    <span class="chip">Self-hosted</span>
+    <span class="chip">Encrypted at rest</span>
+    <span class="chip">Read-only API keys</span>
+  </div>
+  <img class="shot" src="img/overview.webp" alt="">
+  <img class="phone" src="img/phone.webp" alt="">
+</body>
+</html>

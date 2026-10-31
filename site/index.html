@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anser: local-first personal finance, on your own server</title>
+<meta name="description" content="Anser is an open-source, self-hosted personal-finance app in Rust. Banks, cards, brokers and crypto in one net-worth view, on a server you own. Native desktop, web and phone. Encrypted at rest, read-only API keys.">
+<meta name="theme-color" content="#1c1610">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://lucianosrp.github.io/anser/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/NotoSans-Bold.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="fonts/NotoSerif-Italic-subset.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="styles.css">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Anser">
+<meta property="og:title" content="Anser: your money, all in one place">
+<meta property="og:description" content="A private, local-first personal-finance app. Banks, cards, brokers and crypto in one fast app, on your own server.">
+<meta property="og:url" content="https://lucianosrp.github.io/anser/">
+<meta property="og:image" content="https://lucianosrp.github.io/anser/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Anser: your money, all in one place. The Overview page of the app on desktop and phone, with made-up demo data.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Anser: your money, all in one place">
+<meta name="twitter:description" content="A private, local-first personal-finance app. Banks, cards, brokers and crypto in one fast app, on your own server.">
+<meta name="twitter:image" content="https://lucianosrp.github.io/anser/og.png">
+<meta name="twitter:image:alt" content="Anser: your money, all in one place. The Overview page of the app on desktop and phone, with made-up demo data.">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-mark" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="14" fill="#2a2018" stroke="rgba(244,237,225,.16)"/>
+    <path d="M17 50 L32 13 L47 50" fill="none" stroke="#e0a868" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M23.5 37 H40.5" stroke="#8fcf9a" stroke-width="5.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-github" viewBox="0 0 16 16">
+    <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+  </symbol>
+</svg>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="./" aria-label="Anser, home"><svg aria-hidden="true"><use href="#i-mark"/></svg>Anser</a>
+    <nav aria-label="Main">
+      <ul class="nav">
+        <li><a href="#features">Features</a></li>
+        <li class="hide-sm"><a href="#how-it-works">How it works</a></li>
+        <li><a href="#install">Install</a></li>
+        <li><a class="gh" href="https://github.com/lucianosrp/anser" aria-label="GitHub"><svg aria-hidden="true"><use href="#i-github"/></svg><span>GitHub</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="wrap hero-grid">
+      <div class="copy">
+        <p class="eyebrow">Local-first personal finance</p>
+        <h1 id="hero-title"><span>Your money,</span><em>all in one place.</em></h1>
+        <p class="lede">Bank accounts, cards, brokers and crypto in one net-worth view, in one fast app, on <b>your own server</b>. Native desktop, web and phone. Open source, written in Rust.</p>
+        <ul class="chips" aria-label="Highlights">
+          <li class="chip">Self-hosted</li>
+          <li class="chip">Encrypted at rest</li>
+          <li class="chip">Read-only API keys</li>
+        </ul>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/lucianosrp/anser"><svg aria-hidden="true"><use href="#i-github"/></svg>Get it on GitHub</a>
+          <a class="btn btn-ghost" href="#install">Install</a>
+        </div>
+      </div>
+      <div class="shots">
+        <img class="shot" src="img/overview.webp" width="1800" height="1125" fetchpriority="high"
+             alt="The Overview page of the desktop app, half in dark and half in light theme: net worth of 46,500 euros with its 3-year trend, and cards for cash, investments, crypto, budgets and the next 30 days. Made-up demo data.">
+        <img class="phone" src="img/phone.webp" width="560" height="1176"
+             alt="The same Overview page on a phone, as the installable web app.">
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">What it does</p>
+        <h2 id="features-title">Every account, <em>one view.</em></h2>
+        <p class="lede">Anser brings your accounts into one net-worth view in your base currency, with spending, budgets, subscriptions, travel, cash flow and investment pages on top. Exported statements go in by drag and drop; exchanges and brokers sync over read-only APIs.</p>
+      </div>
+
+      <div class="sources">
+        <div class="card">
+          <h3>Banks and cards <span class="kind">Statements</span></h3>
+          <ul class="chips">
+            <li class="chip plain">N26</li>
+            <li class="chip plain">HSBC</li>
+            <li class="chip plain">Revolut</li>
+            <li class="chip plain">Mox</li>
+          </ul>
+          <p>Plus any bank with a table-shaped export, through a format definition you map once on the Upload page.</p>
+        </div>
+        <div class="card">
+          <h3>Brokers <span class="kind">Investments</span></h3>
+          <ul class="chips">
+            <li class="chip plain">Interactive Brokers</li>
+            <li class="chip plain">HSBC FlexInvest</li>
+          </ul>
+          <p>IBKR through its Flex Web Service, a reporting token that cannot trade. Broker cash and positions, marked to the best price available.</p>
+        </div>
+        <div class="card">
+          <h3>Crypto <span class="kind">Exchanges, wallet</span></h3>
+          <ul class="chips">
+            <li class="chip plain">Binance</li>
+            <li class="chip plain">OKX</li>
+            <li class="chip plain">Trezor cold wallet</li>
+          </ul>
+          <p>Live exchange balances over signed read-only APIs; the cold wallet from its exported history.</p>
+        </div>
+      </div>
+
+      <div class="pages">
+        <div>
+          <h3>The pages</h3>
+          <ul class="page-list">
+            <li>Net worth</li>
+            <li>Spending</li>
+            <li>Budgets</li>
+            <li>Subscriptions</li>
+            <li>Travel</li>
+            <li>Cash flow</li>
+            <li>Investments</li>
+          </ul>
+          <p class="note muted">History is a monthly balance sheet in your base currency at monthly FX; <b>now</b> is live balances and positions. Money owed to you counts in net worth. Offline, every page falls back to the last snapshot with a stale badge.</p>
+        </div>
+        <figure>
+          <img class="framed" src="img/travel.webp" width="1800" height="1125" loading="lazy"
+               alt="The Travel page: a world map with trips to New York, London, Tokyo, Osaka, Chiang Mai and Bangkok, trip totals and the cost of each trip. Made-up demo data.">
+          <figcaption>The Travel page, on the made-up demo household every screenshot comes from.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="how-it-works" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-title">Your server, <em>your devices.</em></h2>
+        <p class="lede">Anser runs on a server you own, on your tailnet, and on your own devices. The only outbound calls are read-only: exchange and broker APIs, FX rates and market closes. Nothing is uploaded anywhere else.</p>
+      </div>
+
+      <ol class="flow">
+        <li class="card">
+          <h3>Your server</h3>
+          <p class="muted">Any Linux box: a Raspberry Pi, a home server, a small VPS. <code>anser-server</code> keeps one SQLite database per user, ingests statements, runs the syncs and the valuation, and is published to your tailnet with <code>tailscale serve</code>.</p>
+        </li>
+        <li class="card">
+          <h3>Desktop, web and phone</h3>
+          <p class="muted">A native desktop app built on GPUI, and the same pages compiled to WebAssembly, served by your server and installable on a phone as a PWA.</p>
+        </li>
+        <li class="card">
+          <h3>Works offline</h3>
+          <p class="muted">The desktop opens instantly from a local replica, optionally encrypted, and syncs in the background. No network, no problem: it shows the last snapshot.</p>
+        </li>
+        <li class="card">
+          <h3>Ask your assistant</h3>
+          <p class="muted">Over MCP, Claude, Cursor or Codex can read your numbers through eight read-only tools. Off until you switch it on, opened only by an MCP key, on your tailnet only.</p>
+        </li>
+      </ol>
+
+      <div class="diagram" role="img" aria-label="Diagram: anser-server on your server does ingest, syncs and valuation with one database per user; it syncs over the tailnet to the desktop app's local replica, which works offline, and serves the web app.">
+<b>anser-server</b>  <span>your server · ingest, syncs, valuation · one finance.db per user</span>
+  │
+  │  <i>background sync over your tailnet</i>
+  ▼
+<b>anser</b>         <span>desktop · local replica, optionally encrypted, works offline</span>
+<b>web app</b>       <span>the same pages in a browser tab or on your phone</span></div>
+    </div>
+  </section>
+
+  <section class="block" id="install" aria-labelledby="install-title">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Install</p>
+        <h2 id="install-title">One line, <em>no sudo.</em></h2>
+        <p class="lede">On Linux, from the latest GitHub Release. Checksums are verified against <code>SHA256SUMS</code>.</p>
+      </div>
+
+      <div class="install">
+        <div class="cmds">
+          <div class="cmd">
+            <p class="cmd-label"><b>The desktop app</b>, talking to your server elsewhere on your tailnet</p>
+            <pre><code><span class="p">$ </span>curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh</code></pre>
+          </div>
+          <div class="cmd">
+            <p class="cmd-label"><b>The server</b>, <code>anser-server</code> (x86_64 or aarch64)</p>
+            <pre><code><span class="p">$ </span>curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh -s -- --server</code></pre>
+          </div>
+          <div class="cmd">
+            <p class="cmd-label"><b>Both on one machine</b>: the app starts and stops a local server itself</p>
+            <pre><code><span class="p">$ </span>curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh -s -- --both</code></pre>
+          </div>
+          <div class="cmd">
+            <p class="cmd-label"><b>A specific tag</b></p>
+            <pre><code><span class="p">$ </span>FINANCE_VERSION=v0.1.0 sh install.sh --server</code></pre>
+          </div>
+        </div>
+        <aside class="aside" aria-label="Install notes">
+          <h3>Good to know</h3>
+          <ul>
+            <li><code>anser</code> lands in <code>~/.local/bin</code> (x86_64) with a launcher entry. <code>INSTALL_DIR</code> overrides it.</li>
+            <li>The server binary is not started for you: the next steps are in <a href="https://github.com/lucianosrp/anser/blob/main/DEPLOY.md">DEPLOY.md</a>.</li>
+            <li>Want to look first? <b>Just try it</b> in the app, or <code>?demo=1</code> in the browser, shows a made-up household.</li>
+            <li>Prefer to build it yourself? See <a href="https://github.com/lucianosrp/anser#getting-started">Getting started</a>.</li>
+          </ul>
+          <a class="btn btn-ghost" href="https://github.com/lucianosrp/anser/releases">GitHub Releases</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="privacy" aria-labelledby="privacy-title">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Privacy and security</p>
+        <h2 id="privacy-title">It watches the money. <em>It never touches it.</em></h2>
+      </div>
+      <div class="trust">
+        <div class="card">
+          <h3>Self-hosted</h3>
+          <p>Your data lives on your server and your devices. The server stays on your tailnet, never on the public internet. Each person in a household gets their own database, sources and keys.</p>
+        </div>
+        <div class="card">
+          <h3>Encrypted at rest</h3>
+          <p>API keys in an encrypted store on the server, nightly backups as encrypted archives sealed to a key only your laptop holds, and an optional encrypted local copy on the desktop.</p>
+        </div>
+        <div class="card">
+          <h3>Read-only API keys</h3>
+          <p>Every key is tested by the server, and one that can trade, withdraw or transfer is refused.</p>
+        </div>
+        <div class="card">
+          <h3>Never moves money</h3>
+          <p>Nothing in Anser places a trade, moves funds or pays anyone. It is a record-keeping tool, not financial advice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block name" id="name" aria-labelledby="name-title">
+    <div class="wrap">
+      <h2 class="eyebrow" id="name-title">The name</h2>
+      <blockquote>
+        <p><span class="latin">Anser</span> is Latin for goose. By tradition, the sacred geese kept by the temple of Juno Moneta on the Capitol woke Rome to a night attack, and the mint that later stood in that temple gave us the words <em>money</em> and <em>mint</em>. Like those geese, the app watches over the money and raises the alarm.</p>
+      </blockquote>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="wordmark" href="./" aria-label="Anser, home"><svg aria-hidden="true"><use href="#i-mark"/></svg>Anser</a>
+      <ul class="nav" aria-label="Footer">
+        <li><a href="https://github.com/lucianosrp/anser">GitHub</a></li>
+        <li><a href="https://github.com/lucianosrp/anser/releases">Releases</a></li>
+        <li><a href="https://github.com/lucianosrp/anser/blob/main/SECURITY.md">Security</a></li>
+        <li><a href="https://github.com/lucianosrp/anser/blob/main/LICENSE">MIT licence</a></li>
+      </ul>
+    </div>
+    <p class="credit">Rust · GPUI · SQLite · open source under the <a href="https://github.com/lucianosrp/anser/blob/main/LICENSE">MIT licence</a>. Coded primarily with <a href="https://www.anthropic.com/claude">Claude Opus 5.5</a> via <a href="https://claude.com/claude-code">Claude Code</a>, with <a href="https://x.ai/grok">Grok</a>.</p>
+    <p class="legal">The names and logos of banks, brokers, exchanges, coins, merchants and products belong to their owners. This project is not affiliated with, endorsed or sponsored by any of them; a name or logo only identifies where a user's own data comes from. Anser is a personal record-keeping tool. It is not financial, tax, investment or legal advice, and it is provided “as is”, without warranty of any kind.</p>
+  </div>
+</footer>
+</body>
+</html>
