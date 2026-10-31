@@ -1,10 +1,10 @@
 //! `anser-server push [--remote URL]`: send the remote every local
-//! transactions file and txn_override it lacks (see finance_server::push).
+//! transactions file and txn_override it lacks (see crate::push).
 //! Unreachable remote = one line and exit 0: being offline is normal.
 
 use anyhow::{bail, Result};
 
-use finance_server::push;
+use crate::push;
 
 use super::args::Args;
 

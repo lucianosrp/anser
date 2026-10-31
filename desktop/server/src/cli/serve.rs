@@ -7,8 +7,8 @@ use std::time::Duration;
 
 use anyhow::Result;
 
-use finance_server::log::log;
-use finance_server::{push, server};
+use crate::log::log;
+use crate::{push, server};
 
 use super::args::Args;
 
@@ -25,7 +25,7 @@ pub fn run(rest: &[String]) -> Result<()> {
     let a = Args::parse(rest, &["--bind", "--push-to", "--push-every"], &[])?;
     private_umask();
     // users, devices and the owner's profile (a backup of finance.db first)
-    let boot = finance_server::auth::bootstrap()?;
+    let boot = crate::auth::bootstrap()?;
     if let Some(b) = &boot.backup {
         log(&format!("[auth] before a migration: finance.db backed up to {}", b.display()));
     }
@@ -38,8 +38,8 @@ pub fn run(rest: &[String]) -> Result<()> {
     if let Some(m) = boot.default_mode {
         log(&format!("[auth] default auth mode: {}", m.as_str()));
     }
-    log(&format!("[auth] mode {} (FINANCE_AUTH overrides){}", finance_server::auth::mode().as_str(),
-        if finance_server::auth::household() { "; a household server: reads need a device too (all)" } else { "" }));
+    log(&format!("[auth] mode {} (FINANCE_AUTH overrides){}", crate::auth::mode().as_str(),
+        if crate::auth::household() { "; a household server: reads need a device too (all)" } else { "" }));
     if let Some(remote) = a.value("--push-to") {
         let remote = remote.trim_end_matches('/').to_string();
         let every = a.value("--push-every").and_then(|s| s.parse().ok()).unwrap_or(300u64).max(10);

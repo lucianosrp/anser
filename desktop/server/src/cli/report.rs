@@ -7,7 +7,7 @@ use serde_json::Value;
 
 use finance_engine::db;
 use finance_engine::views::{api, sheet, Ctx};
-use finance_server::feed::FEED;
+use crate::feed::FEED;
 
 use super::args::Args;
 

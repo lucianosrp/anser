@@ -8,7 +8,7 @@
 //!
 //! Fixes come in two kinds ([`Fix`]):
 //! * an [`Action`] the app performs on one click: sync, set up the server,
-//!   start a local `anser-server`, or an [`Installer`];
+//!   start a local server (`anser server serve`), or an [`Installer`];
 //! * a [`Fix::Command`] the owner runs themselves. Anything that changes
 //!   system settings (DNS, packages, the compositor) is only ever shown.
 //!
@@ -138,7 +138,7 @@ pub enum Action {
     SyncNow,
     /// open the guided server setup (URL, save, test)
     SetupServer,
-    /// start `anser-server serve` from next to this binary
+    /// start this binary as `anser server serve` (the server is built in)
     StartLocalServer,
     /// go to the Upload page
     OpenUpload,
@@ -317,7 +317,7 @@ pub fn url_source() -> UrlSource {
 }
 
 pub fn server_check(url: &str, source: UrlSource, probe: &Result<Probe, String>, local: Option<&LocalBundle>,
-                    can_start_local: bool, now_ms: i64) -> Check {
+                    now_ms: i64) -> Check {
     let id = CheckId::Server;
     let from = match source {
         UrlSource::Env => "$FINANCE_SERVER",
@@ -331,11 +331,9 @@ pub fn server_check(url: &str, source: UrlSource, probe: &Result<Probe, String>,
             } else {
                 (Status::Fail, format!("Unreachable: {e}"))
             };
-            let mut c = Check::new(id, status, summary).fact("URL", url).fact("from", from).fact("app", crate::VERSION).fix(Fix::Action(Action::SetupServer));
-            if can_start_local {
-                c = c.fix(Fix::Action(Action::StartLocalServer));
-            }
-            return c;
+            // the server is built into this binary: it can always start one here
+            return Check::new(id, status, summary).fact("URL", url).fact("from", from).fact("app", crate::VERSION)
+                .fix(Fix::Action(Action::SetupServer)).fix(Fix::Action(Action::StartLocalServer));
         }
         Ok(p) => p,
     };
@@ -1150,7 +1148,7 @@ impl Installer for WebAppInstaller {
 
 // ---------- a local server ----------
 
-/// anser-server's default bind (the app's default server).
+/// The local server's default bind (the app's default server).
 pub const LOCAL_SERVER: &str = cache::DEFAULT_SERVER;
 
 // ---------- theme, logos, config ----------
@@ -1303,7 +1301,7 @@ mod tests {
 
     #[test]
     fn server_healthy_and_fresh() {
-        let c = server_check("https://server.x.ts.net:8787", UrlSource::File, &probe_ok(80), Some(&fresh()), false, NOW);
+        let c = server_check("https://server.x.ts.net:8787", UrlSource::File, &probe_ok(80), Some(&fresh()), NOW);
         assert_eq!(c.status, Status::Ok, "{}", c.summary);
         assert!(c.summary.contains("anser-server 0.1.0") && c.summary.contains("80 ms"));
         assert!(c.facts.iter().any(|(k, v)| k == "last sync" && v.starts_with("10 min")));
@@ -1313,14 +1311,14 @@ mod tests {
     #[test]
     fn server_stale_never_synced_and_mismatched() {
         let old = LocalBundle { age_secs: Some(3 * 86_400), ..fresh() };
-        let c = server_check("u", UrlSource::File, &probe_ok(80), Some(&old), false, NOW);
+        let c = server_check("u", UrlSource::File, &probe_ok(80), Some(&old), NOW);
         assert_eq!(c.status, Status::Warn);
         assert_eq!(c.fixes, vec![Fix::Action(Action::SyncNow)]);
-        let c = server_check("u", UrlSource::File, &probe_ok(80), None, false, NOW);
+        let c = server_check("u", UrlSource::File, &probe_ok(80), None, NOW);
         assert_eq!((c.status, c.fixes.clone()), (Status::Warn, vec![Fix::Action(Action::SyncNow)]));
         let mut p = probe_ok(80);
         p.as_mut().unwrap().info.as_mut().unwrap().bundle_version = Some(2);
-        let c = server_check("u", UrlSource::File, &p, Some(&old), false, NOW);
+        let c = server_check("u", UrlSource::File, &p, Some(&old), NOW);
         assert_eq!(c.status, Status::Fail, "a version mismatch beats staleness");
         assert!(c.summary.contains("v2"));
     }
@@ -1328,11 +1326,11 @@ mod tests {
     #[test]
     fn server_unreachable_or_unset() {
         let down: Result<Probe, String> = Err("host not found".into());
-        let c = server_check("https://server.x.ts.net", UrlSource::File, &down, None, true, NOW);
+        let c = server_check("https://server.x.ts.net", UrlSource::File, &down, None, NOW);
         assert_eq!(c.status, Status::Fail);
         assert_eq!(c.fixes, vec![Fix::Action(Action::SetupServer), Fix::Action(Action::StartLocalServer)]);
-        let c = server_check(cache::DEFAULT_SERVER, UrlSource::Default, &down, None, false, NOW);
-        assert_eq!((c.status, c.fixes.len()), (Status::Missing, 1));
+        let c = server_check(cache::DEFAULT_SERVER, UrlSource::Default, &down, None, NOW);
+        assert_eq!((c.status, c.fixes.len()), (Status::Missing, 2));
     }
 
     #[test]
@@ -1718,11 +1716,6 @@ mod tests {
         assert_eq!(url_host("http://[::1]:8787").as_deref(), Some("::1"));
         assert!(is_loopback("127.0.0.1") && is_loopback("localhost") && !is_loopback("server.x.ts.net"));
         assert_eq!(webapp_url("https://a.b/"), "https://a.b/app");
-        let d = scratch("bin");
-        assert_eq!(crate::local_server::local_server_bin(&d.join("anser")).filter(|p| p.starts_with(&d)), None);
-        std::fs::write(d.join("anser-server"), "").unwrap();
-        assert_eq!(crate::local_server::local_server_bin(&d.join("anser")), Some(d.join("anser-server")));
-        let _ = std::fs::remove_dir_all(&d);
     }
 }
 

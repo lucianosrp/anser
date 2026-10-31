@@ -16,9 +16,12 @@ small VPS) and on your own devices:
 
 - **`anser-server`**, the server: one SQLite database per user, ingest of
   exported statements, read-only API syncs, the valuation model, an HTTP API
-  on `127.0.0.1:8787` published to the tailnet with `tailscale serve`.
+  on `127.0.0.1:8787` published to the tailnet with `tailscale serve`. The
+  small headless build, for a server like a Pi: no GUI libraries needed.
 - **`anser`**, the native app (GPUI): opens instantly from a
-  local replica, works offline, syncs in the background.
+  local replica, works offline, syncs in the background. It includes the
+  whole server: `anser server <cmd>` is `anser-server <cmd>`, so one binary
+  is enough on a desktop.
 - **The web app**: the same pages compiled to WebAssembly and served by
   `anser-server`, installable on a phone as a PWA.
 
@@ -38,7 +41,8 @@ That puts `anser` in `~/.local/bin` (x86_64) and a launcher entry.
 No sudo. Checksums are verified against `SHA256SUMS`. The desktop alone talks
 to a server elsewhere (your tailnet). For a one-machine setup, where the data
 lives on this machine too, install both with `--both`: the app then starts
-and stops a local `anser-server` itself, with its data in `~/.local/share/finance`.
+and stops a local server itself (its own binary, as `anser server serve`),
+with its data in `~/.local/share/finance`.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh -s -- --server   # anser-server (x86_64 or aarch64)
@@ -80,9 +84,9 @@ Everything is one Cargo workspace in `desktop/`:
 | Crate | Package | What |
 |---|---|---|
 | `engine/` | `finance-engine` | The store (SQLite schema and migrations), file parsers and ingest, categorization, valuation views, the export bundle, fetchers, encrypted archives, the demo household. UI-free, HTTP-free |
-| `server/` | `finance-server` (binary `anser-server`) | HTTP API, background sync, accounts and pairing, the secrets store, backups, push, hosting the web app, the CLI, the `/mcp` endpoint and its keys |
+| `server/` | `finance-server` (binary `anser-server`) | HTTP API, background sync, accounts and pairing, the secrets store, backups, push, hosting the web app, the CLI (`finance_server::cli`, also `anser server`), the `/mcp` endpoint and its keys |
 | `core/` | `finance-core` | The client side, UI-free: replica cache and sync, ledger, search, budgets, recurring payments, travel, the encrypted local copy |
-| `app/` | `anser` | The GPUI pages (desktop, and the web app's source) |
+| `app/` | `anser` | The GPUI pages (desktop, and the web app's source); links `finance-server` for `anser server <cmd>` |
 | `web/` | `finance-web` | `app/` built for `wasm32-unknown-unknown` on GPUI's web backend |
 | `shots/` | `finance-shots` | Optional: README screenshots of the demo through headless Chrome |
 
@@ -196,7 +200,11 @@ The web app: `rustup target add wasm32-unknown-unknown`, the matching
 `wasm-bindgen-cli`, then `desktop/scripts/build-web.sh --install URL` (or the
 Doctor page's *Install web app on the server*).
 
-## Commands (`anser-server`)
+## Commands (`anser-server`, or `anser server`)
+
+The desktop app includes the server: every command below also runs as
+`anser server <cmd>` (`anser server serve`, `anser server stats`, …).
+`anser-server` is the same CLI without the GUI, for a headless server.
 
 ```bash
 anser-server serve [--bind HOST:PORT]     # the API and the web app

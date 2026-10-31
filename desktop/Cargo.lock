@@ -2073,6 +2073,7 @@ dependencies = [
  "dirs 7.0.0",
  "finance-core",
  "finance-engine",
+ "finance-server",
  "gpui-kit",
  "rusqlite",
  "serde",

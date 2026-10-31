@@ -72,8 +72,8 @@ mod tests {
 // the error to stderr and exits 2.
 
 pub fn usage_error(usage: &str, msg: &str) -> ! {
-    eprintln!("usage: anser-server {usage}");
-    eprintln!("anser-server: error: {msg}");
+    eprintln!("usage: {} {usage}", super::prog());
+    eprintln!("{}: error: {msg}", super::prog());
     std::process::exit(2)
 }
 

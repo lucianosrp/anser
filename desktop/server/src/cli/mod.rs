@@ -5,6 +5,10 @@
 //! install-webapp (send a built web app bundle to a server); pair, user,
 //! auth, secrets (account.rs: devices, the auth mode, the secrets store);
 //! export, import, verify (archives); --version.
+//!
+//! Two binaries run it: `anser-server` (the headless build) and the desktop
+//! app as `anser server`. [`run_main`] sets the program name that usage
+//! lines print ([`prog`]).
 
 mod account;
 mod archive;
@@ -24,6 +28,22 @@ mod serve;
 mod stats;
 mod sync;
 mod txns;
+
+static PROG: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+
+/// How usage lines name this CLI: `anser-server`, or `anser server` when
+/// the desktop binary runs it.
+pub fn prog() -> &'static str {
+    PROG.get().map_or("anser-server", String::as_str)
+}
+
+/// The whole CLI: `args` are what follows the program name (`prog`), the
+/// first one the subcommand; none shows the usage.
+pub fn run_main(prog: &str, args: &[String]) -> anyhow::Result<()> {
+    let _ = PROG.set(prog.to_string());
+    let (sub, rest) = args.split_first().map_or(("help", &[][..]), |(s, r)| (s.as_str(), r));
+    dispatch(sub, rest)
+}
 
 /// The data commands: they run on one user's tree, the owner's unless
 /// `--user NAME|ID` names another (finance_engine::tenant).
@@ -53,7 +73,7 @@ pub fn dispatch(sub: &str, args: &[String]) -> anyhow::Result<()> {
     if PER_USER.contains(&sub) {
         let (user, rest) = take_user(args);
         if let Some(u) = user {
-            let t = finance_server::auth::tenant_of(&u)?;
+            let t = crate::auth::tenant_of(&u)?;
             return t.enter(|| run(sub, &rest));
         }
     }
@@ -81,7 +101,7 @@ fn run(sub: &str, args: &[String]) -> anyhow::Result<()> {
         "push" => push::run(args),
         "install-webapp" => install_webapp::run(args),
         "--version" | "-V" | "version" => {
-            println!("anser-server {}", finance_core::VERSION);
+            println!("{} {}", prog(), finance_core::VERSION);
             Ok(())
         }
         "export" => archive::export(args),
@@ -92,7 +112,7 @@ fn run(sub: &str, args: &[String]) -> anyhow::Result<()> {
         "auth" => account::auth_mode(args),
         "secrets" => account::secrets_cmd(args),
         _ => {
-            eprintln!("usage: anser-server <command> [args]  (unknown: {sub})");
+            eprintln!("usage: {} <command> [args]  (unknown: {sub})", prog());
             std::process::exit(2)
         }
     }

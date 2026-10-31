@@ -560,8 +560,7 @@ impl Onboarding {
         self.note = local.then(|| (true, "Starting the local server…".to_string()));
         let task = cx.background_spawn(async move {
             if local {
-                let exe = std::env::current_exe().ok().and_then(|p| std::fs::canonicalize(p).ok()).unwrap_or_default();
-                finance_core::local_server::ensure(&url, &exe, &finance_core::cache::dir().join("anser-server.log"))?;
+                finance_core::local_server::ensure(&url, &finance_core::cache::dir().join("anser-server.log"))?;
             }
             finance_core::sync::healthz(&url).map_err(|e| format!("{url} doesn't answer: {e:#}"))?;
             finance_core::cache::save_server_url(&url).map_err(|e| e.to_string())?;
@@ -946,7 +945,7 @@ impl Onboarding {
     /// The longer explanation behind the card's "Why?", where it has one.
     fn why_text(&self) -> Option<&'static str> {
         Some(match self.w.step {
-            Step::Where => "A small server (anser-server) fetches and keeps your data; this app is a window on it. It can run right here, or on a home server or VPS you own.",
+            Step::Where => "A small server fetches and keeps your data; this app is a window on it. It can run right here (this app includes it), or on a home server or VPS you own.",
             Step::SignIn if self.have_code == Some(true) && !self.w.paired =>
                 "A pairing code comes from Settings, Account, Pair another device on a device that's signed in (once, for 10 minutes), or it's the code this device got when it signed out.",
             Step::Protect if !self.w.web => "This computer's disk may not be encrypted, so the copy is sealed. The key stays in the OS keyring, never next to the data. \
@@ -1099,7 +1098,7 @@ impl Onboarding {
                 };
                 v_flex().gap_3()
                     .child(v_flex().gap_2()
-                        .child(pick("ob-local", Lucide::Monitor, "This machine", "anser-server runs here", Place::Local, cx))
+                        .child(pick("ob-local", Lucide::Monitor, "This machine", "This app runs the server too", Place::Local, cx))
                         .child(pick("ob-remote", Lucide::Server, "Another machine", "A home server or VPS on your tailnet", Place::Remote, cx)))
                     .children(url)
                     .when_some(self.why_text(), |d, w| d.child(self.why_row(w, cx)))

@@ -16,7 +16,7 @@ use anyhow::{bail, Context, Result};
 
 use finance_engine::archive::{self, ExportOpts, Mode, Scope, Seal, Tree, Unseal};
 use finance_engine::secrets;
-use finance_server::backups;
+use crate::backups;
 
 use super::args::Args;
 
@@ -76,7 +76,7 @@ pub fn export(rest: &[String]) -> Result<()> {
 
 pub fn verify(rest: &[String]) -> Result<()> {
     let Some(file) = rest.first().filter(|f| !f.starts_with("--")).map(PathBuf::from) else {
-        bail!("usage: anser-server verify FILE [--passphrase-file F | --identity FILE]");
+        bail!("usage: {} verify FILE [--passphrase-file F | --identity FILE]", super::prog());
     };
     let a = Args::parse(&rest[1..], &["--passphrase-file", "--identity"], &[])?;
     let u = unseal(&a, &file)?;
@@ -87,9 +87,9 @@ pub fn verify(rest: &[String]) -> Result<()> {
 
 pub fn import(rest: &[String]) -> Result<()> {
     let Some(file) = rest.first().filter(|f| !f.starts_with("--")).map(PathBuf::from) else {
-        bail!("usage: anser-server import FILE --mode fresh|merge|replace [--user NAME|ID] [--dry-run] [--prefer-archive] [--passphrase-file F | --identity FILE]");
+        bail!("usage: {} import FILE --mode fresh|merge|replace [--user NAME|ID] [--dry-run] [--prefer-archive] [--passphrase-file F | --identity FILE]", super::prog());
     };
-    // --user NAME|ID was taken by cmd::dispatch: this runs on that tree
+    // --user NAME|ID was taken by cli::dispatch: this runs on that tree
     let a = Args::parse(&rest[1..], &["--mode", "--passphrase-file", "--identity"], &["--dry-run", "--prefer-archive"])?;
     let mode = a.value("--mode").as_deref().and_then(Mode::parse).context("--mode fresh, merge or replace")?;
     super::serve::private_umask();

@@ -358,7 +358,7 @@ pub fn apply(r: &Release, progress: impl Fn(Stage)) -> Result<Applied> {
 
 /// Start the (new) binary with this process's arguments and end this one.
 pub fn relaunch() -> ! {
-    // exec doesn't run Drop: stop the local anser-server this app owns first
+    // exec doesn't run Drop: stop the local server this app owns first
     crate::local_server::stop_owned();
     if let Ok(exe) = exe_path() {
         let mut cmd = std::process::Command::new(&exe);

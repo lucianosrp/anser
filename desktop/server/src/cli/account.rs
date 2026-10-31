@@ -23,7 +23,7 @@
 use anyhow::{bail, Result};
 
 use finance_engine::secrets;
-use finance_server::auth::{self, Mode};
+use crate::auth::{self, Mode};
 
 fn when(ms: i64) -> String {
     chrono::DateTime::from_timestamp_millis(ms)
@@ -72,18 +72,18 @@ pub fn user(args: &[String]) -> Result<()> {
             Ok(())
         }
         Some("add") => {
-            let name = args.get(1).filter(|n| !n.starts_with("--")).ok_or_else(|| anyhow::anyhow!(USER_USAGE))?;
+            let name = args.get(1).filter(|n| !n.starts_with("--")).ok_or_else(|| anyhow::anyhow!("usage: {} {USER_USAGE}", super::prog()))?;
             let a = super::args::Args::parse(&args[2..], &["--email"], &["--admin"])?;
             super::serve::private_umask();
             auth::bootstrap()?;
             let id = auth::add_user(name, a.value("--email").as_deref(), a.has("--admin"))?;
             let u = auth::find_user(&id.to_string())?;
             println!("user {id} {} ({}), home {}", u.name, u.role, u.home);
-            println!("Pair their first device: anser-server pair --user {id}");
+            println!("Pair their first device: {} pair --user {id}", super::prog());
             Ok(())
         }
         Some("rename") => {
-            let (Some(key), Some(name)) = (args.get(1), args.get(2)) else { bail!(USER_USAGE) };
+            let (Some(key), Some(name)) = (args.get(1), args.get(2)) else { bail!("usage: {} {USER_USAGE}", super::prog()) };
             let u = auth::find_user(key)?;
             auth::rename_user(u.id, name)?;
             println!("user {} is now {}", u.id, name.trim());
@@ -91,7 +91,7 @@ pub fn user(args: &[String]) -> Result<()> {
         }
         Some("remove") => {
             let a = super::args::Args::parse(args.get(2..).unwrap_or(&[]), &[], &["--purge", "--yes-delete-their-data"])?;
-            let Some(key) = args.get(1) else { bail!(USER_USAGE) };
+            let Some(key) = args.get(1) else { bail!("usage: {} {USER_USAGE}", super::prog()) };
             let u = auth::find_user(key)?;
             let purge = a.has("--purge");
             if purge && !a.has("--yes-delete-their-data") {
@@ -107,15 +107,15 @@ pub fn user(args: &[String]) -> Result<()> {
             Ok(())
         }
         Some("revoke") => {
-            let id: i64 = args.get(1).and_then(|s| s.parse().ok()).ok_or_else(|| anyhow::anyhow!("usage: anser-server user revoke DEVICE_ID"))?;
+            let id: i64 = args.get(1).and_then(|s| s.parse().ok()).ok_or_else(|| anyhow::anyhow!("usage: {} user revoke DEVICE_ID", super::prog()))?;
             println!("{}", if auth::revoke(id)? { "revoked" } else { "no such device" });
             Ok(())
         }
-        Some(other) => bail!("{USER_USAGE}  (unknown: {other})"),
+        Some(other) => bail!("usage: {} {USER_USAGE}  (unknown: {other})", super::prog()),
     }
 }
 
-const USER_USAGE: &str = "usage: anser-server user [list | add NAME [--email E] [--admin] | rename NAME|ID NEW_NAME | \
+const USER_USAGE: &str = "user [list | add NAME [--email E] [--admin] | rename NAME|ID NEW_NAME | \
 remove NAME|ID [--purge --yes-delete-their-data] | revoke DEVICE_ID]";
 
 pub fn auth_mode(args: &[String]) -> Result<()> {
@@ -123,7 +123,7 @@ pub fn auth_mode(args: &[String]) -> Result<()> {
     match args.first() {
         None => println!("{}", auth::mode().as_str()),
         Some(m) => {
-            let m = Mode::parse(m).ok_or_else(|| anyhow::anyhow!("usage: anser-server auth [off|writes|all]"))?;
+            let m = Mode::parse(m).ok_or_else(|| anyhow::anyhow!("usage: {} auth [off|writes|all]", super::prog()))?;
             auth::set_mode(m)?;
             println!("auth mode stored: {} (restart not needed{})", m.as_str(),
                 if auth::mode_from_env() { "; FINANCE_AUTH in the environment still overrides it" } else { "" });
@@ -151,6 +151,6 @@ pub fn secrets_cmd(args: &[String]) -> Result<()> {
             }
             Ok(())
         }
-        Some(other) => bail!("usage: anser-server secrets [status|import-env]  (unknown: {other})"),
+        Some(other) => bail!("usage: {} secrets [status|import-env]  (unknown: {other})", super::prog()),
     }
 }
