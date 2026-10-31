@@ -77,6 +77,7 @@ const ROUTES: &[(&str, &str)] = &[
     ("GET", "/api/admin/archives/latest"),
     ("GET", "/api/admin/users"),
     ("GET", "/api/admin/devices"),
+    ("GET", "/api/me/devices"),
     ("GET", "/api/mcp"),
     ("GET", "/mcp"),
     // writes on the caller's tree
@@ -120,6 +121,7 @@ const ROUTES: &[(&str, &str)] = &[
     ("PUT", "/api/admin/backup-recipient"),
     ("POST", "/api/me/pair-code"),
     ("POST", "/api/me/delete"),
+    ("DELETE", "/api/me/devices/*"),
     ("POST", "/api/logout"),
     // admin: accounts and the server, never another user's data
     ("POST", "/api/admin/pair-code"),
@@ -519,6 +521,7 @@ fn a_household_member_never_reaches_another_members_data() {
         ("POST", "/api/admin/auth-mode".into(), Some(("application/json".into(), br#"{"mode":"off"}"#.to_vec())), vec![]),
         ("POST", "/api/admin/invite".into(), None, vec![]),
         ("DELETE", "/api/admin/devices/1".into(), None, vec![]),
+        ("DELETE", "/api/me/devices/1".into(), None, vec![]),
         ("PATCH", "/api/admin/users/1".into(), Some(("application/json".into(), br#"{"name":"pwned"}"#.to_vec())), vec![]),
         ("DELETE", "/api/admin/users/1".into(), None, vec![]),
         ("POST", "/api/secrets/import-env".into(), None, vec![]),
@@ -533,6 +536,17 @@ fn a_household_member_never_reaches_another_members_data() {
         if p.starts_with("/api/admin/") && !p.starts_with("/api/admin/investments/") && !p.starts_with("/api/admin/backup-recipient") {
             assert_eq!(st, 403, "{m} {p}: admins only");
         }
+    }
+    // his own devices only: the owner's aren't listed, nor his to sign out
+    let (_, b) = c.call("GET", "/api/me/devices", o, None, &[]);
+    let owner_devs: Vec<i64> = serde_json::from_slice::<serde_json::Value>(&b).unwrap()["devices"]
+        .as_array().unwrap().iter().filter_map(|d| d["id"].as_i64()).collect();
+    assert!(!owner_devs.is_empty());
+    let (_, b) = c.call("GET", "/api/me/devices", s, None, &[]);
+    let v: serde_json::Value = serde_json::from_slice(&b).unwrap();
+    assert!(v["devices"].as_array().unwrap().iter().all(|d| d["user_id"].as_i64() == Some(sam_id)), "{v}");
+    for id in &owner_devs {
+        assert_eq!(c.call("DELETE", &format!("/api/me/devices/{id}"), s, None, &[]).0, 400, "the owner's device {id}");
     }
     // his archive: his data only, and importing it back stays on his tree
     let (st, file) = c.call("POST", "/api/account/export", s, Some(("application/json", br#"{"passphrase":"sam passphrase!"}"#.to_vec())), &[]);

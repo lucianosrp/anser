@@ -94,6 +94,8 @@ pub fn classify(method: &str, path: &str) -> Class {
         || path.starts_with("/api/admin/archives/")
         || path == "/api/me/pair-code"
         || path == "/api/me/delete"
+        || path == "/api/me/devices"
+        || path.starts_with("/api/me/devices/")
         // an MCP key's token is shown once, like a pairing code
         || (path.starts_with("/api/mcp/keys") && !read)
     {
@@ -315,6 +317,8 @@ mod tests {
         assert_eq!(classify("PUT", "/api/admin/investments/instruments/VT"), Class::Write);
         assert_eq!(classify("PUT", "/api/admin/backup-recipient"), Class::Secret);
         assert_eq!(classify("POST", "/api/me/pair-code"), Class::Secret);
+        assert_eq!(classify("GET", "/api/me/devices"), Class::Secret);
+        assert_eq!(classify("DELETE", "/api/me/devices/4"), Class::Secret);
         assert_eq!(classify("GET", "/api/profile/avatar"), Class::Read);
         assert_eq!(classify("PUT", "/api/profile/avatar"), Class::Write);
     }

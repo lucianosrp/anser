@@ -187,7 +187,9 @@ $FINANCE_HOME/                  user 1, the owner: the tree as it always was, in
   roles, device counts; no paths), `PATCH /api/admin/users/{id}` {name},
   `DELETE /api/admin/users/{id}` (devices and account go, the tree stays
   on disk), `GET /api/admin/devices`, `DELETE /api/admin/devices/{id}`,
-  invites, pairing codes, the auth mode, the web app. No route reads
+  invites, pairing codes, the auth mode, the web app. Anyone sees and signs
+  out their own devices (`GET /api/me/devices`, `DELETE
+  /api/me/devices/{id}`), no one else's. No route reads
   another user's data, admin or not; there is no impersonation. On disk,
   whoever runs the server (the admin, on the server) can read every tree and,
   with master.key, every user's secrets: the separation is between the
