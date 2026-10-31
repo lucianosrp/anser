@@ -49,7 +49,7 @@ wasm-bindgen --target web --no-typescript --out-dir "$out" \
 # with rsvg-convert and committed), and the service worker, whose cache is
 # named after this build so a phone picks up a new one (web/sw.js)
 cp "$here/web/index.html" "$here/web/manifest.webmanifest" "$here/web/icon.svg" "$here"/web/icons/*.png "$out/"
-build=$(cat "$out/finance_web_bg.wasm" "$out/finance_web.js" "$out/index.html" "$out/manifest.webmanifest" | sha256sum | cut -c1-12)
+build=$(cat "$out/finance_web_bg.wasm" "$out/finance_web.js" "$out/index.html" "$out/manifest.webmanifest" "$out/icon.svg" | sha256sum | cut -c1-12)
 sed "s/__BUILD__/$build/" "$here/web/sw.js" > "$out/sw.js"
 # the server sends the .gz to clients that accept gzip (all browsers)
 gzip -9 -k "$out/finance_web_bg.wasm"

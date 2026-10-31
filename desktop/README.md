@@ -31,7 +31,8 @@ The script links `~/.local/bin/anser` to the release build, so a rebuild
 updates the installed app. It also adds a launcher entry
 (`~/.local/share/applications/anser.desktop`) and an icon
 (`~/.local/share/icons/hicolor/scalable/apps/anser.svg`). The icon is a
-rounded tile with a rising line, in a gradient of the current accent. Each time
+goose quill writing a rising line, engraved in the current accent on a dark
+tile of the same hue (anser is Latin for goose). Each time
 the theme is applied (a matugen palette change, an accent change in Settings),
 the app re-colors the installed icon. `anser --icon PATH` writes it
 by hand.
@@ -1837,9 +1838,11 @@ from the server).
   Finance, start and scope `/`, standalone, the warm dark background and
   theme colour, 192 and 512 px icons plus maskable ones.
 - Icons: `web/icons/`, rendered once from `web/icon.svg` (the accent icon,
-  `app/src/icon.rs`) with `rsvg-convert`, and committed. The maskable ones
-  and the 180 px apple-touch-icon come from `icons/icon-maskable.svg`, the
-  same drawing full-bleed. To redo them:
+  `app/src/icon.rs`, in the warm accent) with `rsvg-convert`, and committed.
+  The maskable ones and the 180 px apple-touch-icon come from
+  `icons/icon-maskable.svg`, the same drawing full-bleed. To redo them:
+  `cargo test -p finance-desktop --bin anser regen_web_icons -- --ignored`
+  rewrites both SVGs, then
   `rsvg-convert -w 512 -h 512 web/icon.svg -o web/icons/icon-512.png`, and
   the same for each size.
 - iOS: `apple-touch-icon`, `apple-mobile-web-app-*` meta tags,
