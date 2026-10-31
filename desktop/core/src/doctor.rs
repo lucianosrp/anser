@@ -956,7 +956,7 @@ impl DesktopPaths {
         let data = dirs::data_dir().unwrap_or_default();
         let home = dirs::home_dir().unwrap_or_default();
         DesktopPaths {
-            bin: dirs::executable_dir().unwrap_or_else(|| home.join(".local/bin")).join("finance-desktop"),
+            bin: dirs::executable_dir().unwrap_or_else(|| home.join(".local/bin")).join("anser"),
             launcher: data.join("applications/anser.desktop"),
             icon: data.join("icons/hicolor/scalable/apps/anser.svg"),
         }
@@ -1617,6 +1617,14 @@ mod tests {
         let _ = std::fs::remove_dir_all(&d);
         std::fs::create_dir_all(&d).unwrap();
         d
+    }
+
+    #[test]
+    fn desktop_paths_are_anser() {
+        // the command install.sh links: Doctor looked for the pre-rename name
+        let p = DesktopPaths::user();
+        assert_eq!(p.bin.file_name().unwrap(), "anser");
+        assert_eq!(p.launcher.file_name().unwrap(), "anser.desktop");
     }
 
     #[test]
