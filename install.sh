@@ -3,9 +3,11 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh
 #   curl -fsSL … | sh -s -- --server
-#   FINANCE_VERSION=v0.1.0 sh install.sh --both
+#   FINANCE_VERSION=v0.1.0 sh install.sh --server
 #
-# Default on x86_64 linux: the desktop app. --server / --desktop / --both.
+# One binary per machine. The desktop app (x86_64) includes the server
+# (`anser server ...`); --server installs the small headless anser-server
+# for a box without a screen (x86_64 or aarch64, the default on aarch64).
 # INSTALL_DIR (default ~/.local/bin) is created; no sudo.
 #
 # Latest assets come from GitHub's /releases/latest/download/ CDN redirect
@@ -24,15 +26,17 @@ die() { printf '%s\n' "$*" >&2; exit 1; }
 
 usage() {
   cat <<'EOF'
-Install anser and/or anser-server from GitHub Releases.
+Install Anser from GitHub Releases.
 
   curl -fsSL https://raw.githubusercontent.com/lucianosrp/anser/main/install.sh | sh
   curl -fsSL … | sh -s -- --server
-  sh install.sh --desktop|--server|--both [--version vX.Y.Z]
+  sh install.sh [--desktop|--server] [--version vX.Y.Z]
 
-  --desktop          anser (x86_64 linux; default on x86_64)
-  --server           anser-server (x86_64 or aarch64 linux)
-  --both             both
+  --desktop          anser, the app with the server built in
+                     (x86_64 linux; default on x86_64)
+  --server           anser-server, the headless server alone, for a box
+                     without a screen (x86_64 or aarch64; default on aarch64)
+  --both             both files (rarely needed: anser already runs the server)
   --version vX.Y.Z   that release (else the latest stable)
   -h, --help         this text
 
@@ -63,10 +67,6 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ "$explicit" -eq 0 ]; then
-  want_desktop=1
-fi
-
 case "$version" in
   ''|v*) ;;
   *) version="v$version" ;;
@@ -83,6 +83,11 @@ case "$arch" in
   aarch64|arm64) arch=aarch64 ;;
   *) die "unsupported arch: $arch (need x86_64 or aarch64)" ;;
 esac
+
+# the desktop app where it is built (x86_64), else the headless server
+if [ "$explicit" -eq 0 ]; then
+  if [ "$arch" = x86_64 ]; then want_desktop=1; else want_server=1; fi
+fi
 
 if [ "$want_desktop" -eq 1 ] && [ "$arch" != x86_64 ]; then
   die "anser releases are x86_64 linux only (this machine is $arch). Use --server."
@@ -230,6 +235,12 @@ if [ "$want_desktop" -eq 1 ]; then
   install_from_tar "$desktop_asset" anser
   install_launcher "$INSTALL_DIR/anser"
   print_version "$INSTALL_DIR/anser"
+  cat <<EOF
+
+Launch Anser from your launcher, or run: $INSTALL_DIR/anser
+The server is built in: the app runs it for you. By hand:
+  $INSTALL_DIR/anser server serve    http://127.0.0.1:8787
+EOF
 fi
 
 if [ "$want_server" -eq 1 ]; then
@@ -239,8 +250,7 @@ if [ "$want_server" -eq 1 ]; then
   cat <<EOF
 
 Next steps for the server (this script does not start it). See DEPLOY.md.
-The desktop app starts and stops a local anser-server itself (data in
-~/.local/share/finance, the server's default). To run it by hand:
+Data lives in ~/.local/share/finance unless FINANCE_HOME says otherwise.
   $INSTALL_DIR/anser-server serve   http://127.0.0.1:8787
   from a checkout: systemd user unit   scripts/deploy.sh --install-units
   anser-server pair                 one-time code for a device
