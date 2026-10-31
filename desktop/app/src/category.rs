@@ -37,7 +37,7 @@ category_icons!([
     PiggyBank, ArrowDownLeft, ArrowUpRight,
 ], [
     // pages
-    Target, CalendarRange, ListChecks, Lightbulb, Tags, Wand, Pencil,
+    Target, CalendarRange, ListChecks, Lightbulb, Tags, Wand, Pencil, ChartGantt,
 ]);
 
 /// The icon called `name` ("Utensils"), when it is one of [`NAMED`].

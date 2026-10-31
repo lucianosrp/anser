@@ -155,6 +155,8 @@ pub struct FinanceApp {
     theme_stamp: Option<crate::theme::ThemeStamp>,
     /// Investments hero chart: HK$ (false) or time-weighted % growth (true)
     inv_pct: bool,
+    /// Source tracking: all time (else the last 12 months)
+    cov_all: bool,
     /// Investments: the open tab
     inv_tab: pages::investments::Tab,
     /// Overview projection: how the invested pool grows
@@ -380,6 +382,7 @@ impl FinanceApp {
             open_palette_on_load: std::env::var_os("FINANCE_DESKTOP_PALETTE").is_some(),
             theme_stamp: theme.theme_stamp(),
             inv_pct: std::env::var_os("FINANCE_DESKTOP_INV_PCT").is_some(), // dev/screenshot aid
+            cov_all: dev_aid("FINANCE_DESKTOP_COVERAGE").is_some_and(|v| v == "all"), // dev/screenshot aid
             inv_tab: pages::investments::Tab::from_env(), // FINANCE_DESKTOP_INV_TAB, dev/screenshot aid
             growth: pages::projection::Growth::default(),
             broker_tab: match dev_aid("FINANCE_DESKTOP_BROKER_TAB").as_deref() { // dev/screenshot aid, ?broker_tab=
@@ -1150,6 +1153,7 @@ impl FinanceApp {
                     .child(group("App"))
                     .children(Page::Upload.visible().then(|| item(Page::Upload, cx)))
                     .children(Page::Categories.visible().then(|| item(Page::Categories, cx)))
+                    .children(Page::Coverage.visible().then(|| item(Page::Coverage, cx)))
                     .children(Page::Settings.visible().then(|| item(Page::Settings, cx)))
                     .children(Page::Doctor.visible().then(|| item(Page::Doctor, cx))),
             )
@@ -1179,6 +1183,7 @@ impl FinanceApp {
             Page::CashFlow => "What's expected in and out, day by day",
             Page::Doctor => "Is everything healthy?",
             Page::Categories => "What each category means, and the rules that fill them",
+            Page::Coverage => "What dates each source has data for",
         };
         let hover_bg = t.accent;
         let search = h_flex()
@@ -1280,6 +1285,13 @@ impl FinanceApp {
             (Some(_), Page::Budgets) => Body::One(self.budgets.clone().into_any_element()),
             (Some(_), Page::Review) => Body::One(self.review.clone().into_any_element()),
             (Some(_), Page::Categories) => Body::Sections(self.cats.update(cx, |v, cx| v.sections(cx))),
+            (Some(s), Page::Coverage) => {
+                let view = cx.entity().downgrade();
+                let on_range: pages::coverage::OnRange = Rc::new(move |all, _, cx| {
+                    let _ = view.update(cx, |this, cx| { this.cov_all = all; cx.notify(); });
+                });
+                Body::Sections(pages::coverage::render(&s.bundle, &s.ledger, self.cov_all, on_range, cx))
+            }
             (None, _) => Body::One(self.render_no_data(cx)),
             (Some(s), Page::Overview) => {
                 let view = cx.entity().downgrade();

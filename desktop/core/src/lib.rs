@@ -65,6 +65,7 @@ pub mod cache;
 pub mod capabilities;
 pub mod categories;
 pub mod client;
+pub mod coverage;
 pub mod dca;
 pub mod demo;
 pub mod supported;

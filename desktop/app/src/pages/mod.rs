@@ -9,6 +9,7 @@ pub mod budgets;
 pub mod cashflow;
 // Categories, Rules, Categorize Other (Phase 3: categories as data)
 pub mod categories;
+pub mod coverage;
 pub mod crypto;
 pub mod dca;
 // the browser can't probe DNS, the GPU or local files: a stand-in page
@@ -83,14 +84,15 @@ pub enum Page {
     CashFlow,
     Doctor,
     Categories,
+    Coverage,
 }
 
 impl Page {
     /// Sidebar and palette order.
-    pub const ALL: [Page; 16] = [
+    pub const ALL: [Page; 17] = [
         Page::Overview, Page::Spending, Page::Budgets, Page::Travel, Page::Transactions, Page::Review,
         Page::Subscriptions, Page::CashFlow,
-        Page::Investments, Page::Banks, Page::Crypto, Page::Broker, Page::Upload, Page::Categories, Page::Settings, Page::Doctor,
+        Page::Investments, Page::Banks, Page::Crypto, Page::Broker, Page::Upload, Page::Categories, Page::Coverage, Page::Settings, Page::Doctor,
     ];
 
     /// Ctrl+1 … Ctrl+9. Year in review (Ctrl+Y), Upload (Ctrl+U; dropping
@@ -162,6 +164,7 @@ impl Page {
             Page::CashFlow => "Cash flow",
             Page::Doctor => "Doctor",
             Page::Categories => "Categories",
+            Page::Coverage => "Source tracking",
         }
     }
 
@@ -184,6 +187,7 @@ impl Page {
             Page::CashFlow => kit(IconName::Calendar),
             Page::Doctor => Icon::new(Lucide::Stethoscope),
             Page::Categories => Icon::new(Lucide::Tags),
+            Page::Coverage => Icon::new(Lucide::ChartGantt),
         }
     }
 }
