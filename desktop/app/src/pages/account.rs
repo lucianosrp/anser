@@ -73,6 +73,10 @@ pub struct Account {
     /// devices signed out with a code to jump back in (an admin can end it)
     signed_out: Vec<Value>,
     users_note: Option<(bool, String)>,
+    /// Account, Device: this account's own devices, signed in and signed out
+    /// with a code (any user, admin or not)
+    my_devices: Vec<Value>,
+    my_signed_out: Vec<Value>,
     confirm_remove: Option<i64>,
     p_name: Entity<InputState>,
     p_ccy: Entity<InputState>,
@@ -149,6 +153,8 @@ impl Account {
             devices: vec![],
             signed_out: vec![],
             users_note: None,
+            my_devices: vec![],
+            my_signed_out: vec![],
             confirm_remove: None,
             dz: DeleteAll { here: true, server: false, keep_backups: true, keep_keys: false, keep_backup_key: true },
             dz_note: None,
@@ -227,6 +233,7 @@ impl Account {
         if finance_core::signin::needed() {
             return;
         }
+        self.refresh_mine(cx);
         call(Request::new("GET", "/api/profile"), cx, |this, r, cx| {
             if let Ok(v) = json_of(r) {
                 this.avatar.update(cx, |a, cx| a.set_profile(v.clone(), cx));
@@ -440,6 +447,30 @@ impl Account {
         });
     }
 
+    /// Account, Device: this account's other devices (a phone signed in
+    /// in its browser is one).
+    fn refresh_mine(&mut self, cx: &mut Context<Self>) {
+        call(Request::new("GET", "/api/me/devices"), cx, |this, r, _| {
+            if let Ok(v) = json_of(r) {
+                this.my_devices = v["devices"].as_array().cloned().unwrap_or_default();
+                this.my_signed_out = v["signed_out"].as_array().cloned().unwrap_or_default();
+            }
+        });
+    }
+
+    fn revoke_mine(&mut self, id: i64, cx: &mut Context<Self>) {
+        call(Request::new("DELETE", &format!("/api/me/devices/{id}")), cx, |this, r, cx| {
+            match json_of(r) {
+                Ok(_) => this.pair_note = Some((true, "Device signed out.".into())),
+                Err(e) => this.pair_note = Some((false, e)),
+            }
+            this.refresh_mine(cx);
+            if this.admin() {
+                this.refresh_users(cx);
+            }
+        });
+    }
+
     fn revoke_device(&mut self, id: i64, cx: &mut Context<Self>) {
         call(Request::new("DELETE", &format!("/api/admin/devices/{id}")), cx, |this, r, cx| {
             match json_of(r) {
@@ -562,6 +593,39 @@ impl Render for Account {
                 let until = chrono::DateTime::from_timestamp_millis(exp)
                     .map(|d| d.with_timezone(&chrono::Local).format("%H:%M").to_string()).unwrap_or_default();
                 device = device.child(code_row("acct-copy-code", &code, format!("one device, until {until}: enter it on that device's sign-in screen"), cx));
+            }
+            // the account's other devices: a phone's browser, the laptop, the CLI
+            let this_id = self.who().and_then(|w| w.device.map(|d| d.id)).unwrap_or(0);
+            let mut others = vec![];
+            for (i, d) in self.my_devices.iter().filter(|d| d["id"].as_i64() != Some(this_id)).enumerate() {
+                let did = d["id"].as_i64().unwrap_or(0);
+                let seen = d["last_seen"].as_i64().and_then(chrono::DateTime::from_timestamp_millis)
+                    .map(|d| d.with_timezone(&chrono::Local).format("last seen %d %b %H:%M").to_string()).unwrap_or_else(|| "never seen".into());
+                others.push(h_flex().gap_2().items_center().flex_wrap().text_xs().text_color(t.muted_foreground)
+                    .child(div().text_color(t.foreground).child(d["name"].as_str().unwrap_or("").to_string()))
+                    .child(div().child(seen))
+                    .child(div().flex_1())
+                    .child(Button::new(("my-dev-rm", i)).xsmall().ghost().label("Sign out")
+                        .tooltip("Revoke that device's token: it has to pair again")
+                        .on_click(cx.listener(move |this, _, _, cx| this.revoke_mine(did, cx)))));
+            }
+            for (i, d) in self.my_signed_out.iter().enumerate() {
+                let did = d["id"].as_i64().unwrap_or(0);
+                let when = d["signed_out"].as_i64().and_then(chrono::DateTime::from_timestamp_millis)
+                    .map(|d| d.with_timezone(&chrono::Local).format("signed out %d %b %H:%M").to_string()).unwrap_or_default();
+                others.push(h_flex().gap_2().items_center().flex_wrap().text_xs().text_color(t.muted_foreground)
+                    .child(div().text_color(t.foreground).child(d["name"].as_str().unwrap_or("").to_string()))
+                    .child(div().child(when))
+                    .child(ui::tag("can jump back in", cx))
+                    .child(div().flex_1())
+                    .child(Button::new(("my-dev-out-rm", i)).xsmall().ghost().label("Sign out")
+                        .tooltip("End its code to jump back in: it has to pair again")
+                        .on_click(cx.listener(move |this, _, _, cx| this.revoke_mine(did, cx)))));
+            }
+            if !others.is_empty() {
+                device = device.child(div().h(px(1.)).bg(ui::hairline(cx)))
+                    .child(div().text_size(px(ts::CAPTION)).text_color(t.muted_foreground).child("Your other devices"))
+                    .children(others);
             }
         }
         #[cfg(not(target_family = "wasm"))]

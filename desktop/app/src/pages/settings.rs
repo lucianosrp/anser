@@ -107,9 +107,11 @@ pub struct Model<'a> {
     pub assistants: AnyElement,
 }
 
-const KEYS: [(&str, &str); 14] = [
+const KEYS: [(&str, &str); 16] = [
     ("Ctrl+K", "search everything / command palette"),
-    ("Ctrl+1 … Ctrl+9, Ctrl+U, Ctrl+,", "Overview, Spending, Budgets, Travel, Transactions, Investments, Banks, Crypto, Broker; Upload; Settings"),
+    ("Ctrl+1 … Ctrl+9", "Overview, Spending, Budgets, Travel, Transactions, Investments, Banks, Crypto, Broker"),
+    ("Ctrl+U", "Upload"),
+    ("Ctrl+,", "Settings"),
     ("Ctrl+F", "focus the transactions search"),
     ("Ctrl+R", "sync now"),
     ("Ctrl+Shift+K", "refresh live data: the server fetches the exchanges, broker and prices now, then syncs"),

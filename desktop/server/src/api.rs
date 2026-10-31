@@ -8,6 +8,8 @@
 //! * admin: `POST /api/admin/pair-code` -> a new code, `POST
 //!   /api/admin/auth-mode` {mode}, `GET /api/admin/devices`, `DELETE
 //!   /api/admin/devices/{id}`, `POST /api/secrets/import-env`
+//! * the caller's own devices: `GET /api/me/devices` -> {devices,
+//!   signed_out}, `DELETE /api/me/devices/{id}`
 //! * sources: `GET /api/sources/catalog`, `PUT|DELETE
 //!   /api/sources/{key}/secret`, `POST /api/sources/{key}/test`
 //! * profile and settings: `GET|PUT /api/profile`, `PUT /api/settings/{key}`
@@ -89,6 +91,7 @@ pub fn route(req: &mut Request, method: &str, path: &str, who: &Who) -> Option<R
         ("POST", "/api/me/pair-code") => admin_code(who),
         // the danger zone: a member's own account; an admin's Delete all
         ("POST", "/api/me/delete") => delete_me(req, who),
+        ("GET", "/api/me/devices") => Ok(my_devices(who)),
         ("POST", "/api/admin/wipe") => wipe(req, who),
         ("GET", "/api/admin/users") => Ok(Reply::json(&json!({"users": users_json()}))),
         ("POST", "/api/admin/auth-mode") => auth_mode(req),
@@ -102,6 +105,9 @@ pub fn route(req: &mut Request, method: &str, path: &str, who: &Who) -> Option<R
         _ => {
             if let Some(id) = path.strip_prefix("/api/admin/devices/").filter(|_| method == "DELETE") {
                 return Some(revoke(id, who));
+            }
+            if let Some(id) = path.strip_prefix("/api/me/devices/").filter(|_| method == "DELETE") {
+                return Some(revoke_mine(id, who));
             }
             if let Some(id) = path.strip_prefix("/api/admin/users/") {
                 return match method {
@@ -229,6 +235,32 @@ fn revoke(id: &str, who: &Who) -> Result<Reply> {
         return Ok(bad("this is the device you are using"));
     }
     Ok(Reply::json(&json!({"ok": auth::revoke(id)?})))
+}
+
+/// The caller's own devices (Settings, Account): the ones signed in, then
+/// the ones signed out with a code to jump back in. MCP keys have their own
+/// list (Settings, Assistants).
+fn mine(uid: i64) -> (Vec<auth::Device>, Vec<auth::SignedOut>) {
+    let devices = auth::devices().unwrap_or_default().into_iter().filter(|d| d.user_id == uid && !d.mcp_only()).collect();
+    let out = auth::signed_out().unwrap_or_default().into_iter().filter(|d| d.user_id == uid).collect();
+    (devices, out)
+}
+
+fn my_devices(who: &Who) -> Reply {
+    let (devices, out) = who.device().map(|d| mine(d.user_id)).unwrap_or_default();
+    Reply::json(&json!({"devices": devices, "signed_out": out}))
+}
+
+/// DELETE /api/me/devices/{id}: sign out another of the caller's own
+/// devices (never someone else's, nor the one asking).
+fn revoke_mine(id: &str, who: &Who) -> Result<Reply> {
+    let Some(me) = who.device() else { return Ok(bad("sign in first")) };
+    let Ok(id) = id.parse::<i64>() else { return Ok(bad("not a device id")) };
+    let (devices, out) = mine(me.user_id);
+    if !devices.iter().any(|d| d.id == id) && !out.iter().any(|d| d.id == id) {
+        return Ok(bad("not one of your devices"));
+    }
+    revoke(&id.to_string(), who)
 }
 
 /// The accounts for Settings, Admin, Users: names, roles, devices; never
